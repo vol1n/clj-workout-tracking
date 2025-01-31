@@ -27,7 +27,8 @@
   :main ^:skip-aot workout-demo.core
   :clean-targets ^{:protect false} ["resources/public/js" "target"]
   :profiles {:uberjar {:aot :all
-                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}}
+                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
+                       :uberjar-name "workout-demo.jar"}}
   :shadow-cljs {:builds
               {:app {:target :browser
                      :output-dir "resources/public/js"
@@ -39,6 +40,4 @@
   :aliases {"dev" ["do"
                  ["run" "-m" "workout-demo.core"]
                  ["shadow" "watch" "app"]]}
-  :uberjar-name "workout-demo.jar"
-  :profiles {:uberjar {:aot :all
-                       :uberjar-name "workout-demo.jar"}})
+  :uberjar-name "workout-demo.jar")
