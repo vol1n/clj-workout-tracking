@@ -43,7 +43,7 @@ jobs:
         run: lein uberjar
 
       - name: Upload Uberjar Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: workout-tracker-uberjar
           path: target/uberjar/*.jar
