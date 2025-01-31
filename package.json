@@ -1,0 +1,31 @@
+{
+  "name": "workout-demo",
+  "description": "FIXME: description",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "css:watch": "npx @tailwindcss/cli -i resources/public/css/main.css -o resources/public/dist/styles.css --watch",
+    "css:build": "npx @tailwindcss/cli -i resources/public/css/main.css -o resources/public/dist/styles.css",
+    "dev:front": "lein shadow watch app",
+    "dev:back": "lein run -m workout-demo.core",
+    "build": "lein shadow release app"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "picocolors": "^1.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "shadow-cljs": "^2.28.20"
+  },
+  "devDependencies": {
+    "postcss-cli": "^11.0.0"
+  }
+}
