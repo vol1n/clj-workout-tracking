@@ -11,7 +11,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      AWS_REGION: "us-east-1"
+      ECR_REPO: clojure-workout-backend
+      LAMBDA_FUNCTION_NAME: WorkoutDemoLambda
+      CDK_STACK_NAME: WorkoutDemoStack
+      DOCKER_TAG: latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,8 +47,37 @@ jobs:
       - name: Build Uberjar
         run: lein uberjar
 
-      - name: Upload Uberjar Artifact
-        uses: actions/upload-artifact@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          name: workout-tracker-uberjar
-          path: target/uberjar/*.jar
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
+
+      # ✅ Step 5: Login to Amazon ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # ✅ Step 6: Build and Push Docker Image
+      - name: Build & Push Docker Image
+        run: |
+          docker build -t $ECR_REPO:$DOCKER_TAG .
+          docker tag $ECR_REPO:$DOCKER_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO:$DOCKER_TAG
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO:$DOCKER_TAG
+
+      # ✅ Step 7: Install CDK Dependencies
+      - name: Install Node.js & AWS CDK
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk
+
+      # ✅ Step 8: Deploy the Stack
+      - name: CDK Deploy
+        run: |
+          cd deployment
+          npm install
+          cdk deploy $CDK_STACK_NAME --require-approval never
