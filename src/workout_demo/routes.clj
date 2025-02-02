@@ -9,8 +9,7 @@
                         [clojure.string :as str]
                         [workout-demo.auth :refer [authenticate verify-jwt]]
                         [aero.core :refer [read-config]]
-                        [clojure.java.io :as io]
-                        [ring.adapter.lambda :refer [wrap-lambda]]))
+                        [clojure.java.io :as io]))
 
 (def config (read-config (io/resource "config.edn")))                
 
@@ -78,17 +77,14 @@
           (response {:message "Workout logged"}))))
 
 (defn wrap [routes]
-  (let [wrapped (-> 
+  (-> 
     routes
     (wrap-params)
     (wrap-json-body {:keywords? true})
     (wrap-json-response)
     (wrap-cors 
       :access-control-allow-origin [#"http://localhost:3001"] ;; Allow requests from your frontend
-      :access-control-allow-methods [:get :post :put :delete]))]
-    (if (not= (:env config) :dev)
-      (wrap-lambda wrapped)
-    wrapped)))
+      :access-control-allow-methods [:get :post :put :delete])))
 
 (def app
   (-> 

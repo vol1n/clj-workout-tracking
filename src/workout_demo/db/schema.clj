@@ -1,27 +1,44 @@
 (ns workout-demo.db.schema
-  (:require [datomic.client.api :as d]
-            [workout-demo.db.seeder :refer [generate-workout-days]]
+  (:require [workout-demo.db.seeder :refer [generate-workout-days]]
             [aero.core :refer [read-config]]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [datomic.client.api :as d]))  ;; ✅ Use single API for Local & Cloud
 
+;; Load config
 (def config (read-config (io/resource "config.edn")))
 
 ;; Determine environment
 (def env (:env config))
+(def db-name "workout-demo")
+
 (println "Starting in environment:" env)
 
 (def users (keys (:users config)))
 
-(def client
-  (if (= env :dev)
-    (d/client {:server-type :datomic-local
-               :system "dev"
-               :storage-dir "/Users/colinryan/Projects/workout-demo/db"}) ;; Local Dev Storage
-    (d/client {:server-type :ion
-               :region (get-in config [:aws :region])
-               :system "datomic-prod"})))
+(def use-local? (= env :dev))
 
-(def db-name "workout-demo")
+;; Datomic Client setup
+(defonce client (atom nil))
+(defonce conn (atom nil))
+
+(defn get-client []
+  (when (nil? @client)
+    (reset! client
+            (d/client (if use-local?
+                        {:server-type :datomic-local
+                         :system "local-dev"} 
+                        {:server-type :cloud
+                         :system "workout-demo-datomic-storage"
+                         :region "us-east-1"
+                         :endpoint "https://3k4652uhsi.execute-api.us-east-1.amazonaws.com/"})))) 
+  @client)
+
+(defn get-conn []
+  (when (nil? @conn)
+    (reset! conn (d/connect (get-client) {:db-name db-name})))
+  @conn)
+
+
 
 (defn seed-users [conn]
   (let [db (d/db conn)
@@ -118,8 +135,6 @@
    {:db/ident :workout/timestamp
     :db/valueType :db.type/instant
     :db/cardinality :db.cardinality/one}])
-
-(defonce conn (atom nil))
 
 (defn clear-demo-data [conn]
   (let [db (d/db conn)
@@ -282,11 +297,8 @@
     (concat exercises templates bench-press-sets pull-ups-sets squats-sets lunges-sets run-800-sets completed-exercises workouts)))
 
 
-(defn setup-db []
-  (d/create-database client {:db-name db-name}) ;; Create the database
-  (let [new-conn (d/connect client {:db-name db-name})]
+(defn setup-db [new-conn]
     ;; Define schema for person and address
-    (reset! conn new-conn)
     (d/transact new-conn {:tx-data user-schema})
     (d/transact new-conn {:tx-data [
       {:db/ident :workout/type
@@ -308,10 +320,4 @@
     (seed-users new-conn)
     (d/transact new-conn {:tx-data (seed-templates)})
     (generate-workout-days new-conn)
-    (println "querying for workout types")))
-
-(defn get-conn []
-  (if (nil? @conn)
-    (setup-db)
-    @conn)
-  @conn)
+    (println "querying for workout types"))
