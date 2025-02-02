@@ -6,11 +6,12 @@
            [java.util Date]))
 
 
-(def config (delay (get-config)))
 (def expiration-time (* 60 60 1000))
 
 (defn generate-jwt [user]
-  (let [algorithm (Algorithm/HMAC256 (:jwt-secret @config))]
+
+  (let [config (get-config)
+        algorithm (Algorithm/HMAC256 (:jwt-secret config))]
     (-> (JWT/create)
         (.withSubject (:username user))
         (.withIssuedAt (Date.))
@@ -18,13 +19,15 @@
         (.sign algorithm))))
 
 (defn authenticate [username password]
-  (let [user (get (:users @config) username)]
+  (let [config (get-config)
+        user (get (:users config) username)]
     (when (and user (= password (:password user)))
       (generate-jwt (assoc user :username username)))))
 
 (defn verify-jwt [token]
   (try
-    (let [algorithm (Algorithm/HMAC256 (:jwt-secret @config))
+    (let [config (get-config)
+          algorithm (Algorithm/HMAC256 (:jwt-secret config))
           verifier  (-> (JWT/require algorithm) (.build))
           decoded   (.verify verifier token)]
       {:username (.getSubject decoded)

@@ -10,6 +10,7 @@
     (throw (ex-info "❌ config.edn not found!" {}))))
 
 (defn get-ssm-config []
+    (println "Fetching AWS SSM config...")
   (let [{:keys [exit out err]} (sh "aws" "ssm" "get-parameter"
                                    "--name" "/workout-demo/config"
                                    "--with-decryption"
@@ -25,11 +26,11 @@
         (println "Failed to load SSM config, using local config:" err)
         (load-local-config)))))
 
-(defonce config (try
+(defonce config (delay (try
                     (get-ssm-config)
                     (catch Exception e
                       (println "Error loading config from SSM, falling back to local:" (.getMessage e))
-                      (load-local-config))))
+                      (load-local-config)))))
 
 (defn get-config []
   @config)
