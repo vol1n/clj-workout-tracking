@@ -11,3 +11,4 @@ profiles.clj
 .hg/
 config.edn
 prod-config.edn
+./db/dev

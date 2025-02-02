@@ -47,6 +47,9 @@ jobs:
       - name: Build Uberjar
         run: lein uberjar
 
+      - name: Verify AWS Credentials
+        run: aws sts get-caller-identity
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
