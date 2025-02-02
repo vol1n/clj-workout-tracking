@@ -9,8 +9,6 @@
     (read-config resource)
     (throw (ex-info "❌ config.edn not found!" {}))))
 
-(defonce app-config (atom nil))
-
 (defn get-ssm-config []
   (let [{:keys [exit out err]} (sh "aws" "ssm" "get-parameter"
                                    "--name" "/workout-demo/config"
@@ -27,13 +25,12 @@
         (println "Failed to load SSM config, using local config:" err)
         (load-local-config)))))
 
+(defonce config (delay
+                  (try
+                    (get-ssm-config)
+                    (catch Exception e
+                      (println "⚠️ Error loading config from SSM, falling back to local:" (.getMessage e))
+                      (load-local-config)))))
 
 (defn get-config []
-  (when (nil? @app-config)
-    (reset! app-config
-            (try
-              (get-ssm-config)
-              (catch Exception e
-                (println "⚠️ Error loading config from SSM, falling back to local:" (.getMessage e))
-                (load-local-config)))))
-  @app-config)
+  @config)

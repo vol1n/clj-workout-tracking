@@ -10,3 +10,4 @@ profiles.clj
 .hgignore
 .hg/
 config.edn
+prod-config.edn
