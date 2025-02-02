@@ -1,21 +1,13 @@
 (ns workout-demo.db.schema
   (:require [workout-demo.db.seeder :refer [generate-workout-days]]
             [workout-demo.config :refer [get-config]]
-            [clojure.java.io :as io]
             [datomic.client.api :as d]))  ;; ✅ Use single API for Local & Cloud
 
 ;; Load config
 (def config (delay (get-config)))
 
 ;; Determine environment
-(def env (:env @config))
 (def db-name "workout-demo")
-
-(println "Starting in environment:" env)
-
-(def users (keys (:users @config)))
-
-(def use-local? (= env :dev))
 
 ;; Datomic Client setup
 (defonce client (atom nil))
@@ -24,7 +16,7 @@
 (defn get-client []
   (when (nil? @client)
     (reset! client
-            (d/client (if use-local?
+            (d/client (if (= (:env @config) :dev)
                         {:server-type :datomic-local
                          :system "local-dev"} 
                         {:server-type :cloud
@@ -46,7 +38,7 @@
         existing-users (set (d/q '[:find ?username
                                    :where [_ :user/username ?username]]
                                  db)) 
-        missing-users (remove #(contains? existing-users (name %)) users)] 
+        missing-users (remove #(contains? existing-users (name %)) (keys (:users @config)))] 
     (when (seq missing-users)
       (println "Seeding new users:" missing-users)
       (d/transact conn {:tx-data (mapv (fn [u] {:user/username (name u)}) missing-users)}))
