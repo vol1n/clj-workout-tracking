@@ -4,7 +4,10 @@
             [clojure.java.shell :refer [sh]]
             [clojure.java.io :as io]))
 
-(def local-config (read-config (io/resource "config.edn")))
+(defn load-local-config []
+  (if-let [resource (io/resource "config.edn")]
+    (read-config resource)
+    (throw (ex-info "❌ config.edn not found!" {}))))
 
 (defonce app-config (atom nil))
 
@@ -19,18 +22,18 @@
         (read-string (json/parse-string out true))  ;; Convert JSON to EDN
         (catch Exception e
           (println "Error parsing AWS SSM config, using local config:" (.getMessage e))
-          local-config))
+          (load-local-config)))
       (do
         (println "Failed to load SSM config, using local config:" err)
-        local-config))))
+        (load-local-config)))))
 
-(def config (try
-              (get-ssm-config)
-              (catch Exception e
-                (println "⚠️ Error loading config from SSM, using local fallback:" (.getMessage e))
-                local-config)))
 
 (defn get-config []
   (when (nil? @app-config)
-    (reset! app-config config))
+    (reset! app-config
+            (try
+              (get-ssm-config)
+              (catch Exception e
+                (println "⚠️ Error loading config from SSM, falling back to local:" (.getMessage e))
+                (load-local-config)))))
   @app-config)
