@@ -25,12 +25,11 @@
         (println "Failed to load SSM config, using local config:" err)
         (load-local-config)))))
 
-(defonce config (delay
-                  (try
+(defonce config (try
                     (get-ssm-config)
                     (catch Exception e
-                      (println "⚠️ Error loading config from SSM, falling back to local:" (.getMessage e))
-                      (load-local-config)))))
+                      (println "Error loading config from SSM, falling back to local:" (.getMessage e))
+                      (load-local-config))))
 
 (defn get-config []
   @config)

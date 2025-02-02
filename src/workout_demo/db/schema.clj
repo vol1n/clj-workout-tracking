@@ -5,15 +5,15 @@
             [datomic.client.api :as d]))  ;; ✅ Use single API for Local & Cloud
 
 ;; Load config
-(def config (get-config))
+(def config (delay (get-config)))
 
 ;; Determine environment
-(def env (:env config))
+(def env (:env @config))
 (def db-name "workout-demo")
 
 (println "Starting in environment:" env)
 
-(def users (keys (:users config)))
+(def users (keys (:users @config)))
 
 (def use-local? (= env :dev))
 

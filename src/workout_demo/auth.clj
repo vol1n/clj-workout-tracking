@@ -6,7 +6,7 @@
            [java.util Date]))
 
 
-(def config (get-config))
+(def config (delay (get-config)))
 (def jwt-secret (:jwt-secret config))
 (def users (:users config))
 (def expiration-time (* 60 60 1000))

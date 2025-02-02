@@ -7,10 +7,7 @@
                         [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
                         [ring.middleware.cors :refer [wrap-cors]]
                         [clojure.string :as str]
-                        [workout-demo.auth :refer [authenticate verify-jwt]]
-                        [workout-demo.config :refer [get-config]]))
-
-(def config (get-config))
+                        [workout-demo.auth :refer [authenticate verify-jwt]]))
 
 (defn clean-keyword [kw]
   (if (keyword? kw)
