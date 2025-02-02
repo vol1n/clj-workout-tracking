@@ -8,10 +8,9 @@
                         [ring.middleware.cors :refer [wrap-cors]]
                         [clojure.string :as str]
                         [workout-demo.auth :refer [authenticate verify-jwt]]
-                        [aero.core :refer [read-config]]
-                        [clojure.java.io :as io]))
+                        [workout-demo.config :refer [get-config]]))
 
-(def config (read-config (io/resource "config.edn")))                
+(def config (get-config))
 
 (defn clean-keyword [kw]
   (if (keyword? kw)

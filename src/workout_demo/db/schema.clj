@@ -1,11 +1,11 @@
 (ns workout-demo.db.schema
   (:require [workout-demo.db.seeder :refer [generate-workout-days]]
-            [aero.core :refer [read-config]]
+            [workout-demo.config :refer [get-config]]
             [clojure.java.io :as io]
             [datomic.client.api :as d]))  ;; ✅ Use single API for Local & Cloud
 
 ;; Load config
-(def config (read-config (io/resource "config.edn")))
+(def config (get-config))
 
 ;; Determine environment
 (def env (:env config))

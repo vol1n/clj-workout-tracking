@@ -1,12 +1,12 @@
 (ns workout-demo.auth
-  (:require [aero.core :refer [read-config]]
+  (:require [workout-demo.config :refer [get-config]]
             [clojure.java.io :as io])
   (:import [com.auth0.jwt JWT]
            [com.auth0.jwt.algorithms Algorithm]
            [java.util Date]))
 
-(def config (read-config (io/resource "config.edn")))
 
+(def config (get-config))
 (def jwt-secret (:jwt-secret config))
 (def users (:users config))
 (def expiration-time (* 60 60 1000))

@@ -4,22 +4,22 @@ workout_demo_frontend.auth.get_token = (function workout_demo_frontend$auth$get_
 return localStorage.getItem("jwt");
 });
 workout_demo_frontend.auth.decode_jwt = (function workout_demo_frontend$auth$decode_jwt(token){
-try{var payload = (function (){var G__27576 = token;
-var G__27576__$1 = (((G__27576 == null))?null:clojure.string.split.cljs$core$IFn$_invoke$arity$2(G__27576,/\./));
-var G__27576__$2 = (((G__27576__$1 == null))?null:cljs.core.second(G__27576__$1));
-var G__27576__$3 = (((G__27576__$2 == null))?null:atob(G__27576__$2));
-if((G__27576__$3 == null)){
+try{var payload = (function (){var G__27578 = token;
+var G__27578__$1 = (((G__27578 == null))?null:clojure.string.split.cljs$core$IFn$_invoke$arity$2(G__27578,/\./));
+var G__27578__$2 = (((G__27578__$1 == null))?null:cljs.core.second(G__27578__$1));
+var G__27578__$3 = (((G__27578__$2 == null))?null:atob(G__27578__$2));
+if((G__27578__$3 == null)){
 return null;
 } else {
-return JSON.parse(G__27576__$3);
+return JSON.parse(G__27578__$3);
 }
 })();
 return payload;
-}catch (e27575){if((e27575 instanceof Error)){
-var _ = e27575;
+}catch (e27577){if((e27577 instanceof Error)){
+var _ = e27577;
 return null;
 } else {
-throw e27575;
+throw e27577;
 
 }
 }});
@@ -47,19 +47,19 @@ cljs.core.println.cljs$core$IFn$_invoke$arity$variadic(cljs.core.prim_seq.cljs$c
 var token = workout_demo_frontend.auth.get_token();
 var headers = (cljs.core.truth_(token)?new cljs.core.PersistentArrayMap(null, 1, ["Authorization",["Bearer ",cljs.core.str.cljs$core$IFn$_invoke$arity$1(token)].join('')], null):cljs.core.PersistentArrayMap.EMPTY);
 var user_error_handler = new cljs.core.Keyword(null,"error-handler","error-handler",-484945776).cljs$core$IFn$_invoke$arity$1(opts);
-var default_error_handler = (function (p__27577){
-var map__27578 = p__27577;
-var map__27578__$1 = cljs.core.__destructure_map(map__27578);
-var status = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__27578__$1,new cljs.core.Keyword(null,"status","status",-1997798413));
-var response = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__27578__$1,new cljs.core.Keyword(null,"response","response",-1068424192));
+var default_error_handler = (function (p__27579){
+var map__27580 = p__27579;
+var map__27580__$1 = cljs.core.__destructure_map(map__27580);
+var status = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__27580__$1,new cljs.core.Keyword(null,"status","status",-1997798413));
+var response = cljs.core.get.cljs$core$IFn$_invoke$arity$2(map__27580__$1,new cljs.core.Keyword(null,"response","response",-1068424192));
 if(cljs.core._EQ_.cljs$core$IFn$_invoke$arity$2(status,(401))){
 console.warn("Unauthorized! Logging out.");
 
 return workout_demo_frontend.auth.logout_BANG_();
 } else {
 if(cljs.core.truth_(user_error_handler)){
-var G__27579 = new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"status","status",-1997798413),status,new cljs.core.Keyword(null,"response","response",-1068424192),response], null);
-return (user_error_handler.cljs$core$IFn$_invoke$arity$1 ? user_error_handler.cljs$core$IFn$_invoke$arity$1(G__27579) : user_error_handler.call(null,G__27579));
+var G__27581 = new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"status","status",-1997798413),status,new cljs.core.Keyword(null,"response","response",-1068424192),response], null);
+return (user_error_handler.cljs$core$IFn$_invoke$arity$1 ? user_error_handler.cljs$core$IFn$_invoke$arity$1(G__27581) : user_error_handler.call(null,G__27581));
 } else {
 return null;
 }
