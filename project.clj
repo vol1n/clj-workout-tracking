@@ -30,7 +30,8 @@
   :profiles {:dev {:main workout-demo.core}
              :uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
-                       :uberjar-name "workout-demo.jar"}}
+                       :uberjar-name "workout-demo.jar"
+                       :main workout-demo.lambda}}
   :shadow-cljs {:builds
               {:app {:target :browser
                      :output-dir "resources/public/js"
