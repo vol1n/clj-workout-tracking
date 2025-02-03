@@ -25,7 +25,8 @@
   :plugins [[lein-figwheel "0.5.20"]
             [lein-shadow "0.4.0"]]
   :source-paths ["src", "src_cljs"]
-  :main ^:skip-aot workout-demo.core
+  :main workout-demo.core
+  :aot [workout-demo.lambda]
   :clean-targets ^{:protect false} ["resources/public/js" "target"]
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
