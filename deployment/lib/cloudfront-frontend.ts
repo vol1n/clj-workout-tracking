@@ -12,35 +12,45 @@ export class FrontendCloudfrontStack extends cdk.Stack {
 
     const frontendBucket = new s3.Bucket(this, 'FrontendBucket', {
       bucketName: `shadowcljs-frontend-${this.account}-${this.region}`,
-      publicReadAccess: false,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      publicReadAccess: true,
       websiteIndexDocument: 'index.html',
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true
     });
 
-    const originAccessControl = new cloudfront.OriginAccessIdentity(this, 'CloudFrontOAI');
-    frontendBucket.grantRead(originAccessControl);
+    const bucketPolicyStatement = new s3.BucketPolicy(this, 'BucketPolicy', {
+      bucket: frontendBucket
+    });
+
+    bucketPolicyStatement.document.addStatements(
+      new cdk.aws_iam.PolicyStatement({
+        effect: cdk.aws_iam.Effect.ALLOW,
+        principals: [new cdk.aws_iam.AnyPrincipal()],
+        actions: ["s3:GetObject"],
+        resources: [`${frontendBucket.bucketArn}/*`],
+      })
+    );
+
 
     const distribution = new cloudfront.Distribution(this, 'FrontendDistribution', {
       defaultBehavior: {
         origin: new origins.HttpOrigin(frontendBucket.bucketWebsiteDomainName),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
       },
-      additionalBehaviors: {
-        "/clojure-workout-tracker": {
-          origin: new origins.S3Origin(frontendBucket, {
-            originAccessIdentity: originAccessControl
-          }),
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        },
-        "/clojure-workout-tracker/*": {
-          origin: new origins.S3Origin(frontendBucket, {
-            originAccessIdentity: originAccessControl
-          }),
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        },
-      },
+      // additionalBehaviors: {
+      //   "/clojure-workout-tracker": {
+      //     origin: new origins.S3Origin(frontendBucket, {
+      //       originAccessIdentity: originAccessControl
+      //     }),
+      //     viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      //   },
+      //   "/clojure-workout-tracker/*": {
+      //     origin: new origins.S3Origin(frontendBucket, {
+      //       originAccessIdentity: originAccessControl
+      //     }),
+      //     viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      //   },
+      // },
     });
 
     new s3deploy.BucketDeployment(this, 'DeployFrontend', {
