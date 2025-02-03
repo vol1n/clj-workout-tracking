@@ -27,6 +27,12 @@ export class FrontendCloudfrontStack extends cdk.Stack {
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
       },
       additionalBehaviors: {
+        "/clojure-workout-tracker": {
+          origin: new origins.S3Origin(frontendBucket, {
+            originAccessIdentity: originAccessControl
+          }),
+          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
         "/clojure-workout-tracker/*": {
           origin: new origins.S3Origin(frontendBucket, {
             originAccessIdentity: originAccessControl

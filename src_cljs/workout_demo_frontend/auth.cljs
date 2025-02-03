@@ -45,3 +45,15 @@
     (println "token " token)
     (println "full-opts " full-opts)
     (method url full-opts)))
+
+(defn api-call-no-auth [method route opts]
+  (println "api-call-no-auth")
+  (println "opts " opts)
+  (let [user-error-handler (:error-handler opts)
+        default-error-handler (fn [{:keys [status response]}]
+                                  (when user-error-handler
+                                    (user-error-handler {:status status :response response})))
+        full-opts (merge (dissoc opts :error-handler) {:error-handler default-error-handler} )
+        url (str (get-api-url) route)] ;; Call custom handler if exists
+    (println "full-opts " full-opts)
+    (method url full-opts)))
