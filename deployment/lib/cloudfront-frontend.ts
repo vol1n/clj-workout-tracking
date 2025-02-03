@@ -33,51 +33,6 @@ export class FrontendStack extends cdk.Stack {
       distributionPaths: ['/*']
     });
 
-    const updateConfigLambda = new lambda.Function(this, 'UpdateConfigLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromInline(`
-        const AWS = require('aws-sdk');
-        const s3 = new AWS.S3();
-        const cloudformation = new AWS.CloudFormation();
-
-        exports.handler = async function(event) {
-          console.log("Event: ", JSON.stringify(event, null, 2));
-
-          if (event.RequestType === 'Delete') return { Status: "SUCCESS" };
-
-          // Fetch CloudFormation exports
-          const exportsList = await cloudformation.listExports().promise();
-          const apiGatewayUrlExport = exportsList.Exports.find(exp => exp.Name === 'ApiGatewayInvokeUrl');
-
-          if (!apiGatewayUrlExport) throw new Error("Export ApiGatewayInvokeUrl not found");
-
-          console.log("Writing API Gateway URL to S3: ", apiGatewayUrlExport.Value);
-
-          // Write config.json to S3
-          await s3.putObject({
-            Bucket: process.env.BUCKET_NAME,
-            Key: 'config.json',
-            Body: JSON.stringify({ apiGatewayUrl: apiGatewayUrlExport.Value }),
-            ContentType: 'application/json',
-          }).promise();
-
-          return { Status: "SUCCESS" };
-        };
-      `),
-      timeout: cdk.Duration.seconds(10),
-      environment: {
-        BUCKET_NAME: frontendBucket.bucketName,
-      },
-    });
-
-    frontendBucket.grantPut(updateConfigLambda); // Allow Lambda to write to S3
-
-    // Create a custom resource that invokes the Lambda
-    new cdk.CustomResource(this, 'ConfigUpdater', {
-      serviceToken: updateConfigLambda.functionArn,
-    });
-
     new cdk.CfnOutput(this, 'CloudFrontURL', {
       value: distribution.distributionDomainName,
       description: 'CloudFront URL for the frontend'
