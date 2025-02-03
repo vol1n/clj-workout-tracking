@@ -19,6 +19,6 @@ const backendStack = new BackendLambdaStack(app, 'BackendLambdaStack', {
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
-const frontendStack = new FrontendStack(app, 'FrontendStack', {})
+const frontendStack = new FrontendStack(app, 'FrontendCloudfrontStack', {})
 frontendStack.addDependency(backendStack);
 app.synth()
