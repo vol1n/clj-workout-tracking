@@ -18,6 +18,9 @@ export class FrontendCloudfrontStack extends cdk.Stack {
       autoDeleteObjects: true
     });
 
+    const originAccessControl = new cloudfront.OriginAccessIdentity(this, 'CloudFrontOAI');
+    frontendBucket.grantRead(originAccessControl);
+
     const distribution = new cloudfront.Distribution(this, 'FrontendDistribution', {
       defaultBehavior: {
         origin: new origins.S3Origin(frontendBucket),
@@ -25,7 +28,9 @@ export class FrontendCloudfrontStack extends cdk.Stack {
       },
       additionalBehaviors: {
         "/clojure-workout-tracker/*": {
-          origin: new origins.S3Origin(frontendBucket, { originPath: "/clojure-workout-tracker" }),
+          origin: new origins.S3Origin(frontendBucket, {
+            originAccessIdentity: originAccessControl
+          }),
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
       },
