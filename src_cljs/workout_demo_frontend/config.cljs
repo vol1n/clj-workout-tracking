@@ -4,7 +4,6 @@
 
 (defonce config (r/atom {:api_url "http://localhost:3000"})) ;; Default fallback
 
-;; 🔹 Fetch `config.json` at runtime
 (defn fetch-config []
   (GET "/config.json"
     {:handler      (fn [response]
@@ -15,5 +14,7 @@
                       (println "Failed to load config.json, using default API URL")
                       (reset! config {:api_url "http://localhost:3000"}))}))
 
-;; 🔹 Call this function on app start (ensures runtime execution)
 (js/setTimeout fetch-config 0)
+
+(defn get-api-url []
+  (:api_url @config))
