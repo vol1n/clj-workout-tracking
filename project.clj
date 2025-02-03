@@ -25,10 +25,10 @@
   :plugins [[lein-figwheel "0.5.20"]
             [lein-shadow "0.4.0"]]
   :source-paths ["src", "src_cljs"]
-  :main workout-demo.core
   :aot [workout-demo.lambda]
   :clean-targets ^{:protect false} ["resources/public/js" "target"]
-  :profiles {:uberjar {:aot :all
+  :profiles {:dev {:main workout-demo.core}
+             :uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
                        :uberjar-name "workout-demo.jar"}}
   :shadow-cljs {:builds
