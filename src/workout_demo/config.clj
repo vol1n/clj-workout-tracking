@@ -7,7 +7,7 @@
 (defn load-local-config []
   (if-let [resource (io/resource "config.edn")]
     (read-config resource)
-    (throw (ex-info "❌ config.edn not found!" {}))))
+    (throw (ex-info "❌ config.edn not found!" {})))) 
 
 (defn get-ssm-config []
     (println "Fetching AWS SSM config...")
