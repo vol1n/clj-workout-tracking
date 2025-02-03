@@ -16,7 +16,7 @@ jobs:
       ECR_REPO: clojure-workout-backend
       LAMBDA_FUNCTION_NAME: WorkoutDemoLambda
       CDK_BACKEND_STACK_NAME: BackendLambdaStack
-      CDK_FRONTEND_STACK_NAME: CloudfrontFrontendStack
+      CDK_FRONTEND_STACK_NAME: FrontendCloudfrontStack
       DOCKER_TAG: latest
     steps:
       - name: Checkout code
