@@ -23,12 +23,19 @@ export class FrontendCloudfrontStack extends cdk.Stack {
         origin: new origins.S3Origin(frontendBucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
       },
+      additionalBehaviors: {
+        "/clojure-workout-tracker/*": {
+          origin: new origins.S3Origin(frontendBucket, { originPath: "/clojure-workout-tracker" }),
+          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
+      },
       defaultRootObject: 'index.html'
     });
 
     new s3deploy.BucketDeployment(this, 'DeployFrontend', {
       sources: [s3deploy.Source.asset('../resources/public')],
       destinationBucket: frontendBucket,
+      destinationKeyPrefix: 'clojure-workout-tracker/',
       distribution,
       distributionPaths: ['/*']
     });

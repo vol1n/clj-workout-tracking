@@ -12,5 +12,5 @@ profiles.clj
 config.edn
 prod-config.edn
 ./db/dev
-resources/
+resources/public/js
 deployment/node_modules/public-encrypt/test/test_rsa_privkey.pem

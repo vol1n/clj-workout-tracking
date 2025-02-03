@@ -5,7 +5,7 @@
 (defonce config (r/atom {:api_url "http://localhost:3000"})) ;; Default fallback
 
 (defn fetch-config []
-  (GET "/config.json"
+  (GET "/clojure-workout-tracker/config.json"
     {:handler      (fn [response]
                      (when (:apiGatewayUrl response)
                        (reset! config {:api_url (:apiGatewayUrl response)})
