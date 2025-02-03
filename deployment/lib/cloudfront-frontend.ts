@@ -11,7 +11,7 @@ export class FrontendCloudfrontStack extends cdk.Stack {
     super(scope, id, props);
 
     const frontendBucket = new s3.Bucket(this, 'FrontendBucket', {
-      bucketName: `shadowcljs-frontend-${this.account}`,
+      bucketName: `shadowcljs-frontend-${this.account}-${this.region}`,
       publicReadAccess: false,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
