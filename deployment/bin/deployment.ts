@@ -4,7 +4,7 @@ import { BackendLambdaStack } from '../lib/backend-lambda';
 import { FrontendStack } from '../lib/cloudfront-frontend';
 
 const app = new cdk.App();
-new BackendLambdaStack(app, 'BackendLambdaStack', {
+const backendStack = new BackendLambdaStack(app, 'BackendLambdaStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
@@ -19,5 +19,6 @@ new BackendLambdaStack(app, 'BackendLambdaStack', {
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
-new FrontendStack(app, 'FrontendStack', {})
+const frontendStack = new FrontendStack(app, 'FrontendStack', {})
+frontendStack.addDependency(backendStack);
 app.synth()

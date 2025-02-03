@@ -77,14 +77,8 @@ jobs:
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
-      - name: CDK Deploy Backend
+      - name: CDK Deploy 
         run: |
           cd deployment
           npm install
-          cdk deploy $CDK_BACKEND_STACK_NAME --require-approval never
-
-      - name: CDK Deploy Frontend
-        run: |
-          cd deployment
-          npm install
-          cdk deploy $CDK_FRONTEND_STACK_NAME --require-approval never
+          cdk deploy --require-approval never
