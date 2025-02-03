@@ -81,4 +81,4 @@ jobs:
         run: |
           cd deployment
           npm install
-          cdk deploy --all --require-approval never
+          cdk deploy --all --require-approval never 
