@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
 import { BackendLambdaStack } from '../lib/backend-lambda';
-import { FrontendStack } from '../lib/cloudfront-frontend';
+import { FrontendCloudfrontStack } from '../lib/cloudfront-frontend';
 
 const app = new cdk.App();
 const backendStack = new BackendLambdaStack(app, 'BackendLambdaStack', {
@@ -19,6 +19,6 @@ const backendStack = new BackendLambdaStack(app, 'BackendLambdaStack', {
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
-const frontendStack = new FrontendStack(app, 'FrontendCloudfrontStack', {})
+const frontendStack = new FrontendCloudfrontStack(app, 'FrontendCloudfrontStack', {})
 frontendStack.addDependency(backendStack);
 app.synth()
