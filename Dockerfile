@@ -4,5 +4,4 @@ WORKDIR /app
 # Copy the Uberjar
 COPY target/workout-demo.jar app.jar
 
-# AWS Lambda expects a handler
-CMD ["java", "-jar", "app.jar", "workout_demo.lambda::HttpApiProxyGateway"]
+CMD ["java", "-jar", "app.jar", "workout-demo.lambda.HttpApiProxyGateway"]
