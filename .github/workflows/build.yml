@@ -46,7 +46,9 @@ jobs:
         run: lein deps
 
       - name: Build Uberjar
-        run: lein uberjar
+        run: |
+          lein uberjar
+          jar xf target/workout-demo.jar META-INF/MANIFEST.MF && cat META-INF/MANIFEST.MF
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
