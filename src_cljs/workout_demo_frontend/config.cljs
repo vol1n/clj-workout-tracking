@@ -7,14 +7,15 @@
 (defn fetch-config []
   (GET "/clojure-workout-tracker/config.json"
     {:handler      (fn [response]
-                     (when (:apiGatewayUrl response)
-                       (reset! config {:api_url (:apiGatewayUrl response)})
-                       (println "Config loaded:" @config)))
+                     (let [api-url (get response "apiGatewayUrl")]
+                        (when api-url
+                            (reset! config {:api-url api-url})
+                            (println "Config loaded:" @config))))
      :error-handler (fn [_]
                       (println "Failed to load config.json, using default API URL")
-                      (reset! config {:api_url "http://localhost:3000"}))}))
+                      (reset! config {:api-url "http://localhost:3000"}))}))
 
 (js/setTimeout fetch-config 0)
 
 (defn get-api-url []
-  (:api_url @config))
+  (:api-url @config))
