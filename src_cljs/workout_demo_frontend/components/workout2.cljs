@@ -40,7 +40,7 @@
 ;; API
 (defn fetch-workouts [day month year on-success]
     (println "fetching workouts")
-    (api-call GET "http://localhost:3000/workouts"
+    (api-call GET "/workouts"
         {:params {:day day :month month :year year}
          :response-format :json
          :keywords? true ;; Ensure response keys are keywordized
@@ -54,7 +54,7 @@
 
 (defn save-workout! []
     (let [current-form-state @form-state]
-        (api-call POST "http://localhost:3000/workouts"
+        (api-call POST "/workouts"
             {:params current-form-state
              :format :json
              :response-format :json

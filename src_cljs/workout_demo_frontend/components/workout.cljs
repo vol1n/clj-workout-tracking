@@ -39,7 +39,7 @@
    [:line {:x1 "19" :y1 "5" :x2 "5" :y2 "19" :stroke-linecap "round"}]])
 
 (defn fetch-workouts [day month year]
-  (GET "http://localhost:3000/workouts"
+  (GET "/workouts"
        {:params {:day day :month month :year year}
         :response-format :json
         :keywords? true ;; Ensure response keys are keywordized
@@ -48,7 +48,7 @@
 
 (defn fetch-exercises []
     (println "fetching exercises")
-    (GET "http://localhost:3000/exercises"
+    (GET "/exercises"
        {:response-format :json
         :keywords? true ;; Ensure response keys are keywordized
         :handler #(reset! exercises (:exercises %)) 
@@ -58,7 +58,7 @@
     (println "workout " workout)
     (if (= 0 (count (:exercises workout))) 
         (js/alert "Please add at least one exercise")
-    (POST "http://localhost:3000/workouts"
+    (POST "/workouts"
        {:params {:workout workout}
         :response-format :json
         :keywords? true ;; Ensure response keys are keywordized

@@ -5,7 +5,6 @@
            [com.auth0.jwt.algorithms Algorithm]
            [java.util Date]))
 
-
 (def expiration-time (* 60 60 1000))
 
 (defn generate-jwt [user]

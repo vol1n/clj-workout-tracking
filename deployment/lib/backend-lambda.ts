@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
 
 export class BackendLambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -42,9 +43,25 @@ export class BackendLambdaStack extends cdk.Stack {
       memorySize: 512
     });
 
-    // Output the Lambda function name
+    const api = new apigw.LambdaRestApi(this, 'ApiGwEndpoint', {
+      handler: lambdaFunction,
+      restApiName: "WorkoutDemoApi",
+      deployOptions: {
+        stageName: "prod"
+      }
+    });
+
+    // 🔹 Output the API Gateway Invoke URL
+    new cdk.CfnOutput(this, 'ApiGatewayInvokeUrl', {
+      value: api.url,  // ✅ The Invoke URL
+      description: 'The Invoke URL of the API Gateway',
+      exportName: 'ApiGatewayInvokeUrl'
+    });
+
+    // 🔹 Output the Lambda function name
     new cdk.CfnOutput(this, 'LambdaFunctionName', {
-      value: lambdaFunction.functionName
+      value: lambdaFunction.functionName,
+      description: 'The deployed Lambda function name'
     });
   }
 }

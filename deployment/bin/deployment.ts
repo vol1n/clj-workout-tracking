@@ -20,3 +20,4 @@ new BackendLambdaStack(app, 'BackendLambdaStack', {
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
 new FrontendStack(app, 'FrontendStack', {})
+app.synth()

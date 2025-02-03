@@ -93,7 +93,7 @@
 ;; Together the two following functions are like a react query hook, fetching the month summary when the dependent state changes
 (defn update-month-summary! [month year]
     (println "fetching summary")
-    (api-call GET "http://localhost:3000/summary"
+    (api-call GET "/summary"
         {:params {:month month :year year}
          :response-format :json
          :keywords? true ;; Ensure response keys are keywordized

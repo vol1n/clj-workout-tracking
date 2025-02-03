@@ -62,7 +62,7 @@
         (when (form-valid?)
             (println "data " data)
             (println "current-form-state " current-form-state)
-            (api-call POST "http://localhost:3000/templates"
+            (api-call POST "/templates"
                 {:params data
                  :format :json
                  :response-format :json

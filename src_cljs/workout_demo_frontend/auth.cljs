@@ -1,6 +1,7 @@
 (ns workout-demo-frontend.auth
     (:require [reagent.core :as r]
-              [clojure.string :as str]))
+              [clojure.string :as str]
+              [workout-demo-frontend.config :refer [get-api-url]]))
 
 (def logged-in? (r/atom nil))
 
@@ -27,7 +28,7 @@
 
 ;; Higher Order Function for API calls, automatically attach auth - since I already used GET and POST for
 ;; my API calls, I can just add api-call before them 
-(defn api-call [method url opts]
+(defn api-call [method route opts]
   (println "api-call")
   (println "opts " opts)
   (let [token (get-token)
@@ -39,7 +40,8 @@
                                       (logout!))
                                   (when user-error-handler
                                     (user-error-handler {:status status :response response}))))
-        full-opts (merge (dissoc opts :error-handler) {:headers headers :error-handler default-error-handler} )] ;; Call custom handler if exists
+        full-opts (merge (dissoc opts :error-handler) {:headers headers :error-handler default-error-handler} )
+        url (str (get-api-url) route)] ;; Call custom handler if exists
     (println "token " token)
     (println "full-opts " full-opts)
     (method url full-opts)))

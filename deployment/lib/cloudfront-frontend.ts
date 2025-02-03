@@ -25,8 +25,10 @@ export class FrontendStack extends cdk.Stack {
       defaultRootObject: 'index.html'
     });
 
+    const apiGatewayUrl = cdk.Fn.importValue('ApiGatewayInvokeUrl');
+
     new s3deploy.BucketDeployment(this, 'DeployFrontend', {
-      sources: [s3deploy.Source.asset('../resources/public')],
+      sources: [s3deploy.Source.asset('../resources/public'), s3deploy.Source.jsonData("/config.json", JSON.stringify({ apiGatewayUrl }))],
       destinationBucket: frontendBucket,
       distribution,
       distributionPaths: ['/*']

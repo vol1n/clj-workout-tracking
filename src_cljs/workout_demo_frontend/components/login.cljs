@@ -6,7 +6,7 @@
 (def login-form-state (r/atom {:username "" :password "" :error nil}))
 
 (defn post-login [on-success on-error]
-    (POST "http://localhost:3000/login"
+    (POST "/login"
        {:params @login-form-state
         :format :json
         :response-format :json

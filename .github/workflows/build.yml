@@ -15,7 +15,8 @@ jobs:
       AWS_REGION: "us-east-1"
       ECR_REPO: clojure-workout-backend
       LAMBDA_FUNCTION_NAME: WorkoutDemoLambda
-      CDK_STACK_NAME: WorkoutDemoStack
+      CDK_BACKEND_STACK_NAME: BackendLambdaStack
+      CDK_FRONTEND_STACK_NAME: FrontendStack
       DOCKER_TAG: latest
     steps:
       - name: Checkout code
@@ -76,8 +77,14 @@ jobs:
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
-      - name: CDK Deploy
+      - name: CDK Deploy Backend
         run: |
           cd deployment
           npm install
-          cdk deploy --all --require-approval never
+          cdk deploy $CDK_BACKEND_STACK_NAME --require-approval never
+
+      - name: CDK Deploy Frontend
+        run: |
+          cd deployment
+          npm install
+          cdk deploy $CDK_FRONTEND_STACK_NAME --require-approval never
