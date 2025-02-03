@@ -6,13 +6,13 @@
 (def login-form-state (r/atom {:username "" :password "" :error nil}))
 
 (defn post-login [on-success on-error]
-    (api-call-no-auth (POST "/login"
+    (api-call-no-auth POST "/login"
        {:params @login-form-state
         :format :json
         :response-format :json
         :keywords? true ;; Ensure response keys are keywordized
         :handler on-success
-        :error-handler on-error})))
+        :error-handler on-error}))
 
 (defn login [logged-in?]
     (when (and (get-token) (decode-jwt (get-token)) (not (token-expired?)))

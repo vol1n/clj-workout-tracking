@@ -14,6 +14,7 @@ export class FrontendCloudfrontStack extends cdk.Stack {
       bucketName: `shadowcljs-frontend-${this.account}-${this.region}`,
       publicReadAccess: false,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      websiteIndexDocument: 'index.html',
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true
     });
@@ -23,7 +24,7 @@ export class FrontendCloudfrontStack extends cdk.Stack {
 
     const distribution = new cloudfront.Distribution(this, 'FrontendDistribution', {
       defaultBehavior: {
-        origin: new origins.S3Origin(frontendBucket),
+        origin: new origins.HttpOrigin(frontendBucket.bucketWebsiteDomainName),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
       },
       additionalBehaviors: {
@@ -40,7 +41,6 @@ export class FrontendCloudfrontStack extends cdk.Stack {
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
       },
-      defaultRootObject: 'index.html'
     });
 
     new s3deploy.BucketDeployment(this, 'DeployFrontend', {
