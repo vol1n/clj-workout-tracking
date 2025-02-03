@@ -8,6 +8,10 @@
 (defn get-token []
   (js/localStorage.getItem "jwt"))
 
+(defn join-url [& parts]
+  (let [cleaned (map #(str/replace % #"(^/+|/+$)" "") parts)] 
+    (str/join "/" cleaned)))
+
 (defn decode-jwt [token]
   (try
     (let [payload (some-> token (str/split #"\.") second js/atob js/JSON.parse)]
@@ -41,7 +45,7 @@
                                   (when user-error-handler
                                     (user-error-handler {:status status :response response}))))
         full-opts (merge (dissoc opts :error-handler) {:headers headers :error-handler default-error-handler} )
-        url (str (get-api-url) route)] ;; Call custom handler if exists
+        url (join-url (get-api-url) route)] ;; Call custom handler if exists
     (println "token " token)
     (println "full-opts " full-opts)
     (method url full-opts)))
@@ -54,6 +58,6 @@
                                   (when user-error-handler
                                     (user-error-handler {:status status :response response})))
         full-opts (merge (dissoc opts :error-handler) {:error-handler default-error-handler} )
-        url (str (get-api-url) route)] ;; Call custom handler if exists
+        url (join-url (get-api-url) route)] ;; Call custom handler if exists
     (println "full-opts " full-opts)
     (method url full-opts)))
