@@ -47,11 +47,12 @@
 ;; (defn HttpApiProxyGateway [request]
 ;;   ((hlra/ring<->hl-middleware app) request))
 
-(defn lambda-handler [event]
-    (println "Event:" event)
-    (if (= "OPTIONS" (:httpMethod event))
-        (cors-response event)  ;; Return CORS headers for OPTIONS requests
-    (app event)))
+(defn lambda-handler [request]
+    (println "Event:" request)
+    (let [event (:event request)]
+        (if (= "OPTIONS" (:httpMethod event))
+            (cors-response event)  ;; Return CORS headers for OPTIONS requests
+        (app event))))
 
 (def HttpApiProxyGateway (hlra/ring<->hl-middleware lambda-handler))
 
