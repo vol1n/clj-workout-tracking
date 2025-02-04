@@ -26,38 +26,11 @@
            (slurp (:body ring-response))
            "")})
 
-(def allowed-origins #{"https://vol1n.dev" "https://dimmin3f9flnh.cloudfront.net" "http://localhost:3001"})
-
-(defn cors-response [event]
-  (let [origin (get-in event [:headers "origin"] "unknown-origin")]
-    (println "CORS request from:" origin)
-    (if (contains? allowed-origins origin)
-      {:statusCode 200
-       :headers {"Access-Control-Allow-Origin" origin
-                 "Access-Control-Allow-Methods" "GET,POST,PUT,DELETE,OPTIONS"
-                 "Access-Control-Allow-Headers" "Content-Type,Authorization"
-                 "Access-Control-Allow-Credentials" "true"}
-       :body ""}
-      (do
-        (println "Blocked CORS request from unauthorized origin:" origin)
-        {:statusCode 403
-         :headers {"Content-Type" "application/json"}
-         :body "{\"error\":\"CORS policy does not allow this origin.\"}"}))))
-
 ;; (defn HttpApiProxyGateway [request]
 ;;   ((hlra/ring<->hl-middleware app) request))
 
-(defn lambda-handler [request]
-    (println "Request:" request)
-    (let [payload (:lambda request)
-          event (:event payload)]
-        (println "Payload:" payload)
-        (println "Event:" event)
-        (if (= "OPTIONS" (:httpMethod event))
-            (cors-response event)  ;; Return CORS headers for OPTIONS requests
-        (app event))))
 
-(def HttpApiProxyGateway (hlra/ring<->hl-middleware lambda-handler))
+(def HttpApiProxyGateway (hlra/ring<->hl-middleware app))
 
 (h/entrypoint [#'HttpApiProxyGateway])
 

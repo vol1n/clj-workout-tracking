@@ -52,7 +52,13 @@ export class BackendLambdaStack extends cdk.Stack {
       restApiName: "WorkoutDemoApi",
       deployOptions: {
         stageName: "prod"
-      }
+      },
+      defaultCorsPreflightOptions: {
+        allowOrigins: ["https://vol1n.dev", "https://dimmin3f9flnh.cloudfront.net"], 
+        allowMethods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
+        allowHeaders: ["Content-Type", "Authorization"],
+        allowCredentials: true,
+      },
     });
 
     // 🔹 Output the API Gateway Invoke URL
