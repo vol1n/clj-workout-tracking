@@ -207,24 +207,25 @@
           username)))
 
 (defn get-set-data-between [start-date end-date username exercise-name] 
+  (println "start-date " start-date)
+  (println "end-date " end-date)
+  (println "low taper fade " username)
+  (println "low taper fade " exercise-name)
   (let [conn (get-conn)]
-    (d/q '[:find (pull ?workout [:db/id
-           {:workout/exercises
-            [{:workout.completed-exercise/sets
-              [:workout.set/weight
-               :workout.set/reps
-               :workout.time/time]}]}])
+    (d/q '[:find ?workout ?completed-exercise ?exercise ?exercise-name
            :in $ ?start-date ?end-date ?username ?name
            :where
-          [?workout :workout/timestamp ?timestamp]
-          [(<= ?start-date ?timestamp)]
-          [(<= ?timestamp ?end-date)]
-          [?user :user/username ?username]
+           [?workout :workout/timestamp ?timestamp]
+           [(<= ?start-date ?timestamp)]
+           [(<= ?timestamp ?end-date)]
           [?workout :workout/user ?user]
-          [?workout :workout/exercises ?completed-exercises]
-          [?completed-exercises :workout.exercise/name ?name]]
-        (d/db conn)
-        start-date
-        end-date
-        username
-        exercise-name)))
+          [?user :user/username ?username]
+          [?workout :workout/exercises ?completed-exercise]
+          [?completed-exercise :workout.completed-exercise/exercise ?exercise]
+          [?exercise :workout.exercise/name ?exercise-name]]
+         (d/db conn)
+         start-date
+         end-date
+         username
+         exercise-name)))
+  
