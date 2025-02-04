@@ -1,4 +1,4 @@
-FROM amazoncorretto:17
+FROM openjdk:latest
 WORKDIR /app
 
 # Copy the Uberjar
