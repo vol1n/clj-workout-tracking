@@ -169,7 +169,6 @@
       (d/q '[:find ?workout
            :in $ ?username
            :where
-           [?workout :workout/name ?name]
            [?user :user/username ?username]
            [?workout :workout/user ?user]]
           (d/db conn) 
@@ -195,4 +194,37 @@
       nil
     res)))
 
+(defn get-exercises [username]
+  (let [conn (get-conn)]
+    (d/q '[:find ?template ?name
+           :in $ ?username
+           :where
+           [?template :workout.template/user ?user]
+           [?template :workout.template/exercises ?exercises]
+           [?exercises :workout.exercise/name ?name]
+           [?user :user/username ?username]]
+          (d/db conn)
+          username)))
 
+(defn get-set-data-between [start-date end-date username exercise-name] 
+  (let [conn (get-conn)]
+    (d/q '[:find (pull ?workout [:db/id
+           {:workout/exercises
+            [{:workout.completed-exercise/sets
+              [:workout.set/weight
+               :workout.set/reps
+               :workout.time/time]}]}])
+           :in $ ?start-date ?end-date ?username ?name
+           :where
+          [?workout :workout/timestamp ?timestamp]
+          [(<= ?start-date ?timestamp)]
+          [(<= ?timestamp ?end-date)]
+          [?user :user/username ?username]
+          [?workout :workout/user ?user]
+          [?workout :workout/exercises ?completed-exercises]
+          [?completed-exercises :workout.exercise/name ?name]]
+        (d/db conn)
+        start-date
+        end-date
+        username
+        exercise-name)))
