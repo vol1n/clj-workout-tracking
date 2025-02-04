@@ -26,8 +26,10 @@
            (slurp (:body ring-response))
            "")})
 
-(defn HttpApiProxyGateway [request]
-  ((hlra/ring<->hl-middleware app) request))
+;; (defn HttpApiProxyGateway [request]
+;;   ((hlra/ring<->hl-middleware app) request))
+
+(def HttpApiProxyGateway (hlra/ring<->hl-middleware app))
 
 (h/entrypoint [#'HttpApiProxyGateway])
 
