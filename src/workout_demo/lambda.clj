@@ -26,7 +26,7 @@
            (slurp (:body ring-response))
            "")})
 
-(def allowed-origins ["https://vol1n.dev" "https://dimmin3f9flnh.cloudfront.net" "http://localhost:3001"])
+(def allowed-origins #{"https://vol1n.dev" "https://dimmin3f9flnh.cloudfront.net" "http://localhost:3001"})
 
 (defn cors-response [event]
   (let [origin (get-in event [:headers "origin"] "unknown-origin")]
