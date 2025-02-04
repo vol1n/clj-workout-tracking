@@ -19,6 +19,12 @@ jobs:
       CDK_FRONTEND_STACK_NAME: FrontendCloudfrontStack
       DOCKER_TAG: latest
     steps:
+      - name: Generate Docker Tag
+        run: echo "DOCKER_TAG=$(date +%s)" >> $GITHUB_ENV  # Generates a unique timestamp tag
+
+      - name: Print Docker Tag (Debug)
+        run: echo "Generated Docker Tag $DOCKER_TAG"
+      
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -81,7 +87,7 @@ jobs:
         run: |
           cd deployment
           npm install
-          cdk deploy ${CDK_BACKEND_STACK_NAME} --require-approval never 
+          cdk deploy ${CDK_BACKEND_STACK_NAME} --require-approval never  --parameters DockerTag=$DOCKER_TAG
           cd ..
 
       - name: Get API Gateway URL
