@@ -17,8 +17,12 @@ export class BackendLambdaStack extends cdk.Stack {
     //   visibilityTimeout: cdk.Duration.seconds(300)
     // });
     // ECR Repository Name
+    const dockerTag = new cdk.CfnParameter(this, 'DockerTag', {
+      type: 'String',
+      default: 'latest', // Default in case it's not passed
+    });
+
     const repoName = process.env.ECR_REPO || "clojure-workout-backend";
-    const dockerTag = process.env.DOCKER_TAG || "latest";
 
     // Define IAM Role for Lambda to Pull from ECR
     const lambdaRole = new iam.Role(this, 'LambdaExecutionRole', {
@@ -35,7 +39,7 @@ export class BackendLambdaStack extends cdk.Stack {
       code: lambda.DockerImageCode.fromEcr(
         ecr.Repository.fromRepositoryName(this, 'ECRRepository', repoName),
         {
-          tag: dockerTag
+          tag: dockerTag.valueAsString
         }
       ),
       role: lambdaRole,
