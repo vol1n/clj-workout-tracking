@@ -2,11 +2,9 @@
     (:gen-class)
     (:require [fierycod.holy-lambda-ring-adapter.core :as hlra]
               [fierycod.holy-lambda.core :as h]
-              [workout-demo.routes :refer [handler app]]
-              ))
+              [workout-demo.routes :refer [app]]))
 
 (defn api-gw->ring [event]
-  "Converts an API Gateway event into a Ring request."
   (let [headers (get event "headers" {})
         body (get event "body" nil)
         query-params (get event "queryStringParameters" {})
@@ -22,7 +20,6 @@
      :body (when body (java.io.ByteArrayInputStream. (.getBytes body "UTF-8")))}))
 
 (defn ring->api-gw [ring-response]
-  "Converts a Ring response back to API Gateway format."
   {:statusCode (:status ring-response 200)
    :headers (:headers ring-response {})
    :body (if (:body ring-response)
@@ -31,7 +28,7 @@
 
 (defn HttpApiProxyGateway [request]
 
-  ((hlra/ring<->hl-middleware handler)) request)
+  ((hlra/ring<->hl-middleware app) request))
 
 (h/entrypoint [HttpApiProxyGateway])
 

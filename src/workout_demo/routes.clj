@@ -7,7 +7,8 @@
                         [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
                         [ring.middleware.cors :refer [wrap-cors]]
                         [clojure.string :as str]
-                        [workout-demo.auth :refer [authenticate verify-jwt]]))
+                        [workout-demo.auth :refer [authenticate verify-jwt]]
+                        [workout-demo.handlers.insights :refer [fetch-exercises]]))
 
 (defn clean-keyword [kw]
   (if (keyword? kw)
@@ -36,6 +37,8 @@
         (unauthorized-response)
      (response {:jwt token})))))
 
+(defroutes test-routes
+  (GET "/test-exercises" [username] (response (clean-response (fetch-exercises username)))))
 
 
 (defn wrap-jwt-auth [handler]
@@ -85,6 +88,7 @@
 (def app
   (-> 
     (routes
-      auth-routes  ;; ✅ Keep raw auth routes
-      (wrap-jwt-auth app-routes)) ;; ✅ Wrap JWT auth for protected routes
-    wrap)) ;; ✅ Apply general middleware after composing routes
+      auth-routes  
+      test-routes
+      (wrap-jwt-auth app-routes)) 
+    wrap)) 
