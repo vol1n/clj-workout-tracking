@@ -8,7 +8,7 @@
                         [ring.middleware.cors :refer [wrap-cors]]
                         [clojure.string :as str]
                         [workout-demo.auth :refer [authenticate verify-jwt]]
-                        [workout-demo.handlers.insights :refer [fetch-exercises]]))
+                        [workout-demo.handlers.insights :refer [fetch-exercises fetch-progress]]))
 
 (defn clean-keyword [kw]
   (if (keyword? kw)
@@ -38,10 +38,12 @@
      (response {:jwt token})))))
 
 (defroutes test-routes
-  (GET "/test-exercises" [username] (response (clean-response (fetch-exercises username)))))
+  (GET "/test-exercises" [username] (response (clean-response (fetch-exercises username))))
+  (GET "/test-progress" [username exercise] (response (clean-response (fetch-progress username {:day 1 :month 0 :year 2025} {:day 1 :month 1 :year 2025} exercise)))))
 
 
 (defn wrap-jwt-auth [handler]
+  (println "wrap-jwt-auth")
   (fn [request]
     (println "request " request)
     (println (:headers request))
@@ -82,7 +84,9 @@
     (wrap-json-body {:keywords? true})
     (wrap-json-response)
     (wrap-cors 
-      :access-control-allow-origin [#"http://localhost:3001"] ;; Allow requests from your frontend
+      :access-control-allow-origin [#"http://localhost:3001"
+                                    #"https://dimmin3f9flnh.cloudfront.net/"
+                                    #"https://vol1n.dev"] ;; Allow requests from your frontend
       :access-control-allow-methods [:get :post :put :delete])))
 
 (def app
@@ -91,4 +95,4 @@
       auth-routes  
       test-routes
       (wrap-jwt-auth app-routes)) 
-    wrap)) 
+    wrap))
