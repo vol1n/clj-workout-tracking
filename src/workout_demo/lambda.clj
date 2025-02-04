@@ -48,8 +48,11 @@
 ;;   ((hlra/ring<->hl-middleware app) request))
 
 (defn lambda-handler [request]
-    (println "Event:" request)
-    (let [event (:event request)]
+    (println "Request:" request)
+    (let [payload (:lambda request)
+          event (:event payload)]
+        (println "Payload:" payload)
+        (println "Event:" event)
         (if (= "OPTIONS" (:httpMethod event))
             (cors-response event)  ;; Return CORS headers for OPTIONS requests
         (app event))))
