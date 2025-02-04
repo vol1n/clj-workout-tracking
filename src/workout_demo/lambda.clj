@@ -27,8 +27,7 @@
            "")})
 
 (defn HttpApiProxyGateway [request]
-
   ((hlra/ring<->hl-middleware app) request))
 
-(h/entrypoint [HttpApiProxyGateway])
+(h/entrypoint [#'HttpApiProxyGateway])
 
