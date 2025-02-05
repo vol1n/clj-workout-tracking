@@ -37,11 +37,6 @@
         (unauthorized-response)
      (response {:jwt token})))))
 
-(defroutes test-routes
-  (GET "/test-exercises" [username] (response (clean-response (fetch-exercises username))))
-  (GET "/test-progress" [username exercise] (response (clean-response (fetch-progress username {:day 1 :month 0 :year 2025} {:day 1 :month 1 :year 2025} exercise)))))
-
-
 (defn wrap-jwt-auth [handler]
   (println "wrap-jwt-auth")
   (fn [request]
@@ -75,7 +70,11 @@
         (let [workout (:body request)
               username (get-in request [:user :username])] 
           (log-workout workout username)
-          (response {:message "Workout logged"}))))
+          (response {:message "Workout logged"})))
+      (GET "/exercises" {{username :username} :user} (response (clean-response (fetch-exercises username))))
+      (GET "/progress" {{start-day "start-day" start-month "start-month" start-year "start-year" end-day "end-day" end-month "end-month" end-year "end-year" exercise "exercise"} :query-params
+                        {username :username} :user} 
+        (response (clean-response (fetch-progress username {:day (Integer/parseInt start-day) :month (Integer/parseInt start-month) :year (Integer/parseInt start-year)} {:day (Integer/parseInt end-day) :month (Integer/parseInt end-month) :year (Integer/parseInt end-year)} exercise)))))
 
 (defn wrap [routes]
   (-> 
@@ -93,6 +92,5 @@
   (-> 
     (routes
       auth-routes  
-      test-routes
       (wrap-jwt-auth app-routes)) 
     wrap))

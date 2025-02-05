@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Created-By: Leiningen 2.11.2
+Built-By: colinryan
+Build-Jdk: 23
+Leiningen-Project-ArtifactId: workout-demo
+Leiningen-Project-GroupId: workout-demo
+Leiningen-Project-Version: 0.1.0-SNAPSHOT
+Main-Class: workout_demo.lambda
+

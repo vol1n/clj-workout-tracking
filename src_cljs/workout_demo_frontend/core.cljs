@@ -4,14 +4,15 @@
   [workout-demo-frontend.components.tabs :refer [tabs, current-tab]]
   [workout-demo-frontend.components.templates :refer [select-template]]
   [workout-demo-frontend.components.login :refer [login]]
-  [workout-demo-frontend.auth :refer [logged-in?]]))
+  [workout-demo-frontend.auth :refer [logged-in?]]
+  [workout-demo-frontend.components.insights :refer [insights]]))
 
 (defn app []
   [:div
    [:div {:class "mt-10 ml-20 mr-20"}
    (cond
      (nil? @logged-in?) [login logged-in?]
-     (= @current-tab :insights) "Insights"
+     (= @current-tab :insights) [insights]
      (= @current-tab :calendar) [calendar]
      (= @current-tab :settings) [select-template]
      :else "Default")]

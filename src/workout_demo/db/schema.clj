@@ -1,7 +1,7 @@
 (ns workout-demo.db.schema
   (:require [workout-demo.db.seeder :refer [generate-workout-days]]
             [workout-demo.config :refer [get-config]]
-            [datomic.client.api :as d]))  ;; ✅ Use single API for Local & Cloud
+            [datomic.client.api :as d])) 
 
 ;; Load config
 (def config (delay (get-config)))
@@ -18,19 +18,13 @@
     (reset! client
             (d/client (if (= (:env @config) :dev)
                         {:server-type :datomic-local
-                         :system "local-dev"} 
+                         :system "dev"
+                         :storage-dir "/Users/colinryan/Projects/workout-demo/db"} 
                         {:server-type :cloud
                          :system "workout-demo-datomic-storage"
                          :region "us-east-1"
                          :endpoint "https://3k4652uhsi.execute-api.us-east-1.amazonaws.com/"})))) 
   @client)
-
-(defn get-conn []
-  (when (nil? @conn)
-    (reset! conn (d/connect (get-client) {:db-name db-name})))
-  @conn)
-
-
 
 (defn seed-users [conn]
   (let [db (d/db conn)
@@ -70,11 +64,11 @@
    {:db/ident :workout.exercise/tracking-type
     :db/valueType :db.type/ref
     :db/cardinality :db.cardinality/one}
-  {:db/ident :workout.exercise/unique-key 
+   {:db/ident :workout.exercise/unique-key 
     :db/valueType :db.type/tuple
-      :db/tupleTypes [:db.type/string :db.type/ref]
+    :db/tupleTypes [:db.type/string :db.type/ref]
     :db/unique :db.unique/identity
-      :db/cardinality :db.cardinality/one}
+    :db/cardinality :db.cardinality/one}
    {:db/ident :workout.exercise/num-sets
     :db/valueType :db.type/long
     :db/cardinality :db.cardinality/one}])
@@ -160,8 +154,7 @@
                                   (map first workouts)
                                   (map first exercises)
                                   (map first completed-exercises)
-                                  (map first sets)
-                                  [demo-user-id])]
+                                  (map first sets))]
           (when (seq entities-to-delete)
             (d/transact conn {:tx-data (mapv #(vector :db/retractEntity %) entities-to-delete)}))
           (println "Cleared data for demo user.")))))
@@ -310,6 +303,25 @@
     (d/transact new-conn {:tx-data workout-time-schema})
     (d/transact new-conn {:tx-data workout-set-schema})
     (seed-users new-conn)
+    (clear-demo-data new-conn)
+    (let [db (d/db new-conn)
+      users (d/q '[:find ?username
+                   :where
+                   [?u :user/username ?username]]
+                 db)]
+    (println "Usernames in DB:" users))
     (d/transact new-conn {:tx-data (seed-templates)})
     (generate-workout-days new-conn)
     (println "querying for workout types"))
+
+
+(defn ensure-db []
+  (let [client (get-client)]
+    (d/create-database client {:db-name db-name})))
+
+(defn get-conn []
+  (when (nil? @conn)
+    (ensure-db)
+    (reset! conn (d/connect (get-client) {:db-name db-name}))
+    (setup-db @conn))
+  @conn)

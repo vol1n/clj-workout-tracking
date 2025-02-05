@@ -23,6 +23,7 @@
     "picocolors": "^1.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "recharts": "^2.15.1",
     "shadow-cljs": "^2.28.20"
   },
   "devDependencies": {

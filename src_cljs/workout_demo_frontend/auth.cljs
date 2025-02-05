@@ -9,6 +9,7 @@
   (js/localStorage.getItem "jwt"))
 
 (defn join-url [& parts]
+  (println "parts " parts)
   (let [cleaned (map #(str/replace % #"(^/+|/+$)" "") parts)] 
     (str/join "/" cleaned)))
 
@@ -53,6 +54,7 @@
 (defn api-call-no-auth [method route opts]
   (println "api-call-no-auth")
   (println "opts " opts)
+  (println (get-api-url))
   (let [user-error-handler (:error-handler opts)
         default-error-handler (fn [{:keys [status response]}]
                                   (when user-error-handler

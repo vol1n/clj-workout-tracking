@@ -23,4 +23,4 @@
  ;;
  ;; >>>>>>>>>>>>>>>>>>>>>>>> YOUR CHANGES WILL BE LOST <<<<<<<<<<<<<<<<<<<<<<<<<
  ;;
- {:builds {:app {:target :browser, :output-dir "resources/public/js", :asset-path "/js", :modules {:main {:init-fn workout-demo-frontend.core/init}}}}, :dependencies [[reagent "1.2.0"]], :source-paths ["src_cljs"], :dev-http {3001 {:root "resources/public"}}, :lein true}
+ {:builds {:app {:target :browser, :output-dir "resources/public/js", :asset-path "/js", :modules {:main {:init-fn workout-demo-frontend.core/init}}, :js-options {:resolve {"vega-lite" {:target :global, :require "vega-lite"}, "vega-embed" {:target :global, :require "vega-embed"}, "vega" {:target :global, :require "vega"}}}}}, :dependencies [[reagent "1.2.0"]], :source-paths ["src_cljs"], :dev-http {3001 {:root "resources/public"}}, :lein true}
