@@ -1,38 +1,26 @@
 (ns workout-demo.config
   (:require [aero.core :refer [read-config]]
-            [cheshire.core :as json]  ;; ✅ Parse JSON from AWS
-            [clojure.java.shell :refer [sh]]
-            [clojure.java.io :as io]
-            [clojure.edn :as edn]))
-
-(defn get-env-config []
-  (some-> (System/getenv "CONFIG")   ;; Get env var as a string
-          edn/read-string))
+            [clojure.java.io :as io])
+  (:import [com.amazonaws.services.simplesystemsmanagement AWSSimpleSystemsManagementClientBuilder]
+           [com.amazonaws.services.simplesystemsmanagement.model GetParameterRequest]))
 
 (defn load-local-config []
   (if-let [resource (io/resource "config.edn")]
     (read-config resource)
     (throw (ex-info "❌ config.edn not found!" {})))) 
 
-(defn get-ssm-config []
-    (println "Fetching AWS SSM config...")
-  (let [{:keys [exit out err]} (sh "aws" "ssm" "get-parameter"
-                                   "--name" "/workout-demo/config"
-                                   "--with-decryption"
-                                   "--query" "Parameter.Value"
-                                   "--output" "json")]
-    (if (zero? exit)
-      (try
-        (read-string (json/parse-string out true))  ;; Convert JSON to EDN
-        (catch Exception e
-          (println "Error parsing AWS SSM config, using local config:" (.getMessage e))
-          (load-local-config)))
-      (do
-        (println "Failed to load SSM config, using local config:" err)
-        (load-local-config)))))
+
+(defn fetch-config-ssm []
+  (let [ssm-client (-> (AWSSimpleSystemsManagementClientBuilder/defaultClient))
+        param-name (System/getenv "CONFIG_PARAM_NAME") ;; Read parameter name from env
+        request (doto (GetParameterRequest.)
+                  (.setName param-name)
+                  (.setWithDecryption true))
+        response (.getParameter ssm-client request)]
+    (.getValue (.getParameter response))))
 
 (defonce config (delay (try
-                    (get-env-config)
+                    (fetch-config-ssm)
                     (catch Exception e
                       (println "Error loading config from env, falling back to local:" (.getMessage e))
                       (load-local-config)))))

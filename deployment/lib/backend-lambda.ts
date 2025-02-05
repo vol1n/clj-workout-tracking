@@ -24,12 +24,8 @@ export class BackendLambdaStack extends cdk.Stack {
     });
 
     const repoName = process.env.ECR_REPO || "clojure-workout-backend";
-
-    // Define IAM Role for Lambda to Pull from ECR
-    const secureConfigParam = ssm.StringParameter.fromSecureStringParameterAttributes(this, "SecureParam", {
-      parameterName: "/workout-demo/config",
-    });
     
+    const paramName = '/workout-demo/config';
 
     const lambdaRole = new iam.Role(this, 'LambdaExecutionRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -49,7 +45,7 @@ export class BackendLambdaStack extends cdk.Stack {
         }
       ),
       environment: {
-        CONFIG: secureConfigParam.stringValue
+        CONFIG_PARAM_NAME: paramName
       },
       role: lambdaRole,
       timeout: cdk.Duration.seconds(30),
