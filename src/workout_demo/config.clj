@@ -2,7 +2,12 @@
   (:require [aero.core :refer [read-config]]
             [cheshire.core :as json]  ;; ✅ Parse JSON from AWS
             [clojure.java.shell :refer [sh]]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.edn :as edn]))
+
+(defn get-env-config []
+  (some-> (System/getenv "CONFIG")   ;; Get env var as a string
+          edn/read-string))
 
 (defn load-local-config []
   (if-let [resource (io/resource "config.edn")]
@@ -27,9 +32,9 @@
         (load-local-config)))))
 
 (defonce config (delay (try
-                    (get-ssm-config)
+                    (get-env-config)
                     (catch Exception e
-                      (println "Error loading config from SSM, falling back to local:" (.getMessage e))
+                      (println "Error loading config from env, falling back to local:" (.getMessage e))
                       (load-local-config)))))
 
 (defn get-config []

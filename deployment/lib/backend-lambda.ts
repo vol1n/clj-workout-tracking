@@ -5,6 +5,7 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 export class BackendLambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -25,6 +26,11 @@ export class BackendLambdaStack extends cdk.Stack {
     const repoName = process.env.ECR_REPO || "clojure-workout-backend";
 
     // Define IAM Role for Lambda to Pull from ECR
+    const secureConfigParam = ssm.StringParameter.fromSecureStringParameterAttributes(this, "SecureParam", {
+      parameterName: "/workout-demo/config",
+    });
+    
+
     const lambdaRole = new iam.Role(this, 'LambdaExecutionRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [
@@ -42,6 +48,9 @@ export class BackendLambdaStack extends cdk.Stack {
           tag: dockerTag.valueAsString
         }
       ),
+      environment: {
+        CONFIG: secureConfigParam.stringValue
+      },
       role: lambdaRole,
       timeout: cdk.Duration.seconds(30),
       memorySize: 512
