@@ -19,7 +19,7 @@
         response (.getParameter ssm-client request)
         config (.getValue (.getParameter response))]
     (println "Fetched config from SSM: " config)
-    config))
+    (read-config config)))
 
 (defonce config (delay (try
                     (fetch-config-ssm)

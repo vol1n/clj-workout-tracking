@@ -5,6 +5,7 @@
            [com.auth0.jwt.algorithms Algorithm]
            [java.util Date]))
 
+
 (def expiration-time (* 60 60 1000))
 
 (defn generate-jwt [user]
@@ -20,6 +21,8 @@
 (defn authenticate [username password]
   (let [config (get-config)
         user (get (:users config) username)]
+        (println "user " user)
+        (println "users " (:users config))        
     (when (and user (= password (:password user)))
       (generate-jwt (assoc user :username username)))))
 
