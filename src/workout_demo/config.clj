@@ -16,8 +16,10 @@
         request (doto (GetParameterRequest.)
                   (.setName param-name)
                   (.setWithDecryption true))
-        response (.getParameter ssm-client request)]
-    (.getValue (.getParameter response))))
+        response (.getParameter ssm-client request)
+        config (.getValue (.getParameter response))]
+    (println "Fetched config from SSM: " config)
+    config))
 
 (defonce config (delay (try
                     (fetch-config-ssm)
