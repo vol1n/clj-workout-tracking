@@ -1,6 +1,7 @@
 (ns workout-demo.config
   (:require [aero.core :refer [read-config]]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [clojure.edn :as edn]))
   (:import [com.amazonaws.services.simplesystemsmanagement AWSSimpleSystemsManagementClientBuilder]
            [com.amazonaws.services.simplesystemsmanagement.model GetParameterRequest]))
 
@@ -19,7 +20,7 @@
         response (.getParameter ssm-client request)
         config (.getValue (.getParameter response))]
     (println "Fetched config from SSM: " config)
-    (read-config config)))
+    (edn/read-string config)))
 
 (defonce config (delay (try
                     (fetch-config-ssm)
