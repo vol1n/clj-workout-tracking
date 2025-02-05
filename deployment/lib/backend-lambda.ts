@@ -76,6 +76,23 @@ export class BackendLambdaStack extends cdk.Stack {
       },
     });
 
+    const methods = ["GET", "POST", "PUT", "DELETE"];
+    // CORS
+    methods.forEach((method) => {
+      api.root.addMethod(method, new apigw.LambdaIntegration(lambdaFunction), {
+        methodResponses: [
+          {
+            statusCode: "200",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+            },
+          },
+        ],
+      });
+    });
+
     // 🔹 Output the API Gateway Invoke URL
     new cdk.CfnOutput(this, 'ApiGatewayInvokeUrl', {
       value: api.url,  // ✅ The Invoke URL
