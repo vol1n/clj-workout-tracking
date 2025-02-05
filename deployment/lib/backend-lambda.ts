@@ -76,21 +76,30 @@ export class BackendLambdaStack extends cdk.Stack {
       },
     });
 
-    const methods = ["GET", "POST", "PUT", "DELETE"];
-    // CORS
-    methods.forEach((method) => {
-      api.root.addMethod(method, new apigw.LambdaIntegration(lambdaFunction), {
-        methodResponses: [
-          {
-            statusCode: "200",
-            responseParameters: {
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-            },
+    const proxyMethod = api.root.getResource("proxy") ?? api.root;
+    proxyMethod.addMethod("ANY", new apigw.LambdaIntegration(lambdaFunction, {
+      integrationResponses: [
+        {
+          statusCode: "200",
+          responseParameters: {
+            "method.response.header.Access-Control-Allow-Origin": "'*'", // Or specify allowed origins
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS, GET, POST, PUT, DELETE'",
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type, Authorization'",
           },
-        ],
-      });
+        },
+      ],
+      passthroughBehavior: apigw.PassthroughBehavior.WHEN_NO_MATCH,
+    }), {
+      methodResponses: [
+        {
+          statusCode: "200",
+          responseParameters: {
+            "method.response.header.Access-Control-Allow-Origin": true,
+            "method.response.header.Access-Control-Allow-Methods": true,
+            "method.response.header.Access-Control-Allow-Headers": true,
+          },
+        },
+      ],
     });
 
     // 🔹 Output the API Gateway Invoke URL
