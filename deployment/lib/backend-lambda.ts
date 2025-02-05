@@ -32,7 +32,17 @@ export class BackendLambdaStack extends cdk.Stack {
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly')
-      ]
+      ],
+      inlinePolicies: {
+        'LambdaExecutionPolicy': new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: ['ssm:GetParameter'],
+              resources: ['*'],
+            }),
+          ],
+        }),
+      }
     });
 
     // Lambda Function using Docker Image
