@@ -1,7 +1,7 @@
 (ns workout-demo.routes
     (:require [compojure.core :refer [GET POST defroutes routes]]
                         [ring.middleware.params :refer [wrap-params]]
-                        [ring.util.response :refer [response status]]
+                        [ring.util.response :refer [response status header]]
                         [workout-demo.handlers.workouts :refer [fetch-month-summary fetch-days-workouts log-workout]]
                         [workout-demo.handlers.templates :refer [create-template fetch-templates fetch-template]]
                         [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
@@ -28,6 +28,13 @@
     (response {:error "Unauthorized"})
     (status 401)))
 
+(defn add-cors-headers [response]
+  (-> response
+      (header "Access-Control-Allow-Origin" "*")  ;; Allow all origins
+      (header "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS")
+      (header "Access-Control-Allow-Headers" "Content-Type, Authorization")
+      (header "Access-Control-Allow-Credentials" "true")))
+
 (defroutes auth-routes
   (POST "/login" request 
     (let [body (:body request)
@@ -35,7 +42,9 @@
       (println "TOKEN " token)
       (if (nil? token)
         (unauthorized-response)
-     (response {:jwt token})))))
+      (->
+       (response {:jwt token})
+       (add-cors-headers))))))
 
 (defn wrap-jwt-auth [handler]
   (println "wrap-jwt-auth")
@@ -50,31 +59,50 @@
         (handler (assoc request :user user))
         (unauthorized-response)))))
 
+
+
 (defroutes app-routes 
       (POST "/templates" request (let [body (:body request)
                                        username (get-in request [:user :username])] 
         (create-template body username)
-        (response {:message "Template created"})))
-      (GET "/templates" {{username :username} :user} (response (clean-response (fetch-templates username))))
+        (-> 
+          (response {:message "Template created"})
+          (add-cors-headers))))
+      (GET "/templates" {{username :username} :user} 
+        (-> 
+          (response (clean-response (fetch-templates username)))
+          (add-cors-headers)))
       (GET "/template" {{id "id"} :query-params
                         {username :username} :user}
-          (response (clean-response (fetch-template (Long/parseLong id) username))))
+          (-> 
+            (response (clean-response (fetch-template (Long/parseLong id) username)))
+            (add-cors-headers)))
       (GET "/summary" {{month "month" year "year"} :query-params
                        {username :username} :user} 
           (println "input " month year username)
-          (response (clean-response (fetch-month-summary (Integer/parseInt month) (Integer/parseInt year) username))))
+          (-> 
+            (response (clean-response (fetch-month-summary (Integer/parseInt month) (Integer/parseInt year) username)))
+            (add-cors-headers)))
       (GET "/workouts" {{day "day" month "month" year "year"} :query-params
                         {username :username} :user}
-        (response (clean-response (fetch-days-workouts (Integer/parseInt day) (Integer/parseInt month) (Integer/parseInt year) username))))
+        (-> 
+          (response (clean-response (fetch-days-workouts (Integer/parseInt day) (Integer/parseInt month) (Integer/parseInt year) username)))
+          (add-cors-headers)))
       (POST "/workouts" request 
         (let [workout (:body request)
               username (get-in request [:user :username])] 
           (log-workout workout username)
-          (response {:message "Workout logged"})))
-      (GET "/exercises" {{username :username} :user} (response (clean-response (fetch-exercises username))))
+          (-> 
+            (response {:message "Workout logged"})
+            (add-cors-headers))))
+      (GET "/exercises" {{username :username} :user} (-> 
+          (response (clean-response (fetch-exercises username)))
+          (add-cors-headers)))
       (GET "/progress" {{start-day "start-day" start-month "start-month" start-year "start-year" end-day "end-day" end-month "end-month" end-year "end-year" exercise "exercise"} :query-params
                         {username :username} :user} 
-        (response (clean-response (fetch-progress username {:day (Integer/parseInt start-day) :month (Integer/parseInt start-month) :year (Integer/parseInt start-year)} {:day (Integer/parseInt end-day) :month (Integer/parseInt end-month) :year (Integer/parseInt end-year)} exercise)))))
+        (->
+          (response (clean-response (fetch-progress username {:day (Integer/parseInt start-day) :month (Integer/parseInt start-month) :year (Integer/parseInt start-year)} {:day (Integer/parseInt end-day) :month (Integer/parseInt end-month) :year (Integer/parseInt end-year)} exercise)))
+          (add-cors-headers))))
 
 (defn wrap [routes]
   (-> 
