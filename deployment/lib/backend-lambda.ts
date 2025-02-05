@@ -63,7 +63,6 @@ export class BackendLambdaStack extends cdk.Stack {
     });
 
     const api = new apigw.LambdaRestApi(this, 'ApiGwEndpoint', {
-      proxy: false,
       handler: lambdaFunction,
       restApiName: "WorkoutDemoApi",
       deployOptions: {
