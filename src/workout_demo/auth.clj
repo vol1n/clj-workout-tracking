@@ -2,6 +2,7 @@
   (:require [workout-demo.config :refer [get-config]]
             [clojure.java.io :as io])
   (:import [com.auth0.jwt JWT]
+  
            [com.auth0.jwt.algorithms Algorithm]
            [java.util Date]))
 
