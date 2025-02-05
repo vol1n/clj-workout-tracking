@@ -1,7 +1,7 @@
 (ns workout-demo.config
   (:require [aero.core :refer [read-config]]
             [clojure.java.io :as io]
-            [clojure.edn :as edn]))
+            [clojure.edn :as edn])
   (:import [com.amazonaws.services.simplesystemsmanagement AWSSimpleSystemsManagementClientBuilder]
            [com.amazonaws.services.simplesystemsmanagement.model GetParameterRequest]))
 
