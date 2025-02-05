@@ -76,31 +76,28 @@ export class BackendLambdaStack extends cdk.Stack {
       },
     });
 
-    const proxyMethod = api.root.getResource("proxy") ?? api.root;
-    proxyMethod.addMethod("ANY", new apigw.LambdaIntegration(lambdaFunction, {
-      integrationResponses: [
-        {
-          statusCode: "200",
-          responseParameters: {
-            "method.response.header.Access-Control-Allow-Origin": "'*'", // Or specify allowed origins
-            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS, GET, POST, PUT, DELETE'",
-            "method.response.header.Access-Control-Allow-Headers": "'Content-Type, Authorization'",
-          },
-        },
-      ],
-      passthroughBehavior: apigw.PassthroughBehavior.WHEN_NO_MATCH,
-    }), {
-      methodResponses: [
-        {
-          statusCode: "200",
-          responseParameters: {
-            "method.response.header.Access-Control-Allow-Origin": true,
-            "method.response.header.Access-Control-Allow-Methods": true,
-            "method.response.header.Access-Control-Allow-Headers": true,
-          },
-        },
-      ],
-    });
+    const cfnMethod = api.root.node.findChild("ANY") as apigw.CfnMethod;
+cfnMethod.addPropertyOverride("Integration.IntegrationResponses", [
+  {
+    StatusCode: "200",
+    ResponseParameters: {
+      "method.response.header.Access-Control-Allow-Origin": "'*'", // Or restrict it to specific domains
+      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS, GET, POST, PUT, DELETE'",
+      "method.response.header.Access-Control-Allow-Headers": "'Content-Type, Authorization'",
+    },
+  },
+]);
+
+cfnMethod.addPropertyOverride("MethodResponses", [
+  {
+    StatusCode: "200",
+    ResponseParameters: {
+      "method.response.header.Access-Control-Allow-Origin": true,
+      "method.response.header.Access-Control-Allow-Methods": true,
+      "method.response.header.Access-Control-Allow-Headers": true,
+    },
+  },
+]);
 
     // 🔹 Output the API Gateway Invoke URL
     new cdk.CfnOutput(this, 'ApiGatewayInvokeUrl', {
