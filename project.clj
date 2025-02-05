@@ -21,7 +21,11 @@
                  [com.auth0/java-jwt "4.4.0"]
                  [io.github.FieryCod/holy-lambda "0.6.1"]
                  [io.github.FieryCod/holy-lambda-ring-adapter "0.1.2"]
-                 [com.datomic/client-cloud "1.0.130"]]
+                 [com.datomic/client-cloud "1.0.130"]
+                 [com.datomic/local "1.0.285"]
+                 [com.amazonaws/aws-java-sdk-ssm "1.12.586"]
+                 [com.amazonaws/aws-java-sdk-core "1.12.586"]
+                 [com.amazonaws/aws-java-sdk-kms "1.12.586"]]
   :plugins [[lein-figwheel "0.5.20"]
             [lein-shadow "0.4.0"]]
   :source-paths ["src", "src_cljs"]
@@ -36,7 +40,10 @@
               {:app {:target :browser
                      :output-dir "resources/public/js"
                      :asset-path "/js"
-                     :modules {:main {:init-fn workout-demo-frontend.core/init}}}}
+                     :modules {:main {:init-fn workout-demo-frontend.core/init}}
+                     :js-options {:resolve {"vega-lite" {:target :global, :require "vega-lite"}
+                     "vega-embed" {:target :global, :require "vega-embed"}
+                     "vega" {:target :global, :require "vega"}}}}}
                 :dependencies [[reagent "1.2.0"]]
                 :source-paths ["src_cljs"]
                 :dev-http {3001 {:root "resources/public"}}}
