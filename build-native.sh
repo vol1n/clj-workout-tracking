@@ -7,7 +7,7 @@ mkdir -p .holy-lambda/build
 mv target/output.jar .holy-lambda/build/output.jar
 
 echo "Running GraalVM Native Image Build inside Docker..."
-container_id=$(docker run -d --rm \
+container_id=$(docker run -d \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   graalvm-lambda-builder-jdk21 \
   /usr/lib/graalvm/bin/native-image \
@@ -31,6 +31,7 @@ docker exec "$container_id" find / -name lambda-binary
 echo "Extracting built binary from Docker container..."
 docker cp "$container_id":/workspace/lambda-binary .holy-lambda/build/lambda-binary
 docker stop "$container_id" > /dev/null 2>&1
+docker rm "$container_id"
 
 # Ensure binary is executable
 chmod +x .holy-lambda/build/lambda-binary
