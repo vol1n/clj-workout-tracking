@@ -67,6 +67,7 @@ jobs:
       - name: 🏗️ Run GraalVM Native Image Build
         run: ./build-native.sh
 
+        
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
