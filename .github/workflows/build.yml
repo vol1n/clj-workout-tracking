@@ -19,6 +19,8 @@ jobs:
       CDK_FRONTEND_STACK_NAME: FrontendCloudfrontStack
       DOCKER_TAG: latest
     steps:
+      - name: Check system architecture
+        run: uname -m
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
