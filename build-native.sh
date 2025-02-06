@@ -10,6 +10,7 @@ echo "Running GraalVM Native Image Build inside Docker..."
 container_id=$(docker run -d \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   graalvm-lambda-builder-jdk21 \
+  --static \
   /usr/lib/graalvm/bin/native-image \
   --features=clj_easy.graal_build_time.InitClojureClasses \
   -jar /workspace/.holy-lambda/build/output.jar \
