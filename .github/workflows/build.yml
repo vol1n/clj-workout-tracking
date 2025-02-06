@@ -50,41 +50,21 @@ jobs:
 
       - name: Install Dependencies
         run: lein deps
-
-      - name: Build Uberjar
-        run: |
-          lein uberjar
         
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
 
       - name: Pull Prebuilt GraalVM Build Environment
-        run: docker pull ghcr.io/vol1n/graalvm-lambda-builder-jdk21:latest
+        run: |
+          docker pull ghcr.io/vol1n/graalvm-lambda-builder-jdk21:latest
+          docker tag ghcr.io/vol1n/graalvm-lambda-builder-jdk21:latest graalvm-lambda-builder-jdk21
 
       - name: 🏗️ Run GraalVM Native Image Build
         run: ./build-native.sh
 
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
-
       - name: 📤 Upload ZIP to S3
         run: |
           aws s3 cp .holy-lambda/deploy/lambda-native.zip s3://workout-demo-lambda-bucket/lambda-native.zip
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build & Push Docker Image
-        run: |
-          docker build -t $ECR_REPO:$DOCKER_TAG .
-          docker tag $ECR_REPO:$DOCKER_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO:$DOCKER_TAG
-          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO:$DOCKER_TAG
 
       - name: Install Node.js & AWS CDK
         uses: actions/setup-node@v4
