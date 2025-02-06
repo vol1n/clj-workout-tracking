@@ -7,7 +7,7 @@ mkdir -p .holy-lambda/build
 mv target/output.jar .holy-lambda/build/output.jar
 
 echo "Running GraalVM Native Image Build..."
-docker run --rm -it \
+docker run --rm \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   graalvm-lambda-builder-jdk21 \
   /usr/lib/graalvm/bin/native-image \
