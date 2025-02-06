@@ -18,11 +18,12 @@ container_id=$(docker run -d --rm \
   --verbose)
 
 # Wait for the container to finish the build
+docker logs -f "$container_id" &
 docker wait "$container_id"
 
 # Extract binary from the container
 echo "Extracting built binary from Docker container..."
-docker cp "$container_id":/workspace/.holy-lambda/build/lambda-binary .holy-lambda/build/lambda-binary
+docker cp "$container_id":/workspace/lambda-binary .holy-lambda/build/lambda-binary
 docker stop "$container_id" > /dev/null 2>&1
 
 # Ensure binary is executable
