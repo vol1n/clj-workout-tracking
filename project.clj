@@ -26,7 +26,7 @@
                  [com.amazonaws/aws-java-sdk-ssm "1.12.586"]
                  [com.amazonaws/aws-java-sdk-core "1.12.586" :exclusions [joda-time]]
                  [com.amazonaws/aws-java-sdk-kms "1.12.586"]
-                 [com.github.clj-easy/graal-build-time "0.1.4"]]
+                 [com.github.clj-easy/graal-build-time "1.0.5"]]
   :plugins [[lein-figwheel "0.5.20"]
             [lein-shadow "0.4.0"]]
   :source-paths ["src", "src_cljs"]
