@@ -54,9 +54,6 @@ jobs:
       - name: Build Uberjar
         run: |
           lein uberjar
-          jar xf target/workout-demo.jar META-INF/MANIFEST.MF && cat META-INF/MANIFEST.MF
-          jar tf target/workout-demo.jar | grep "workout_demo/lambda"
-          jar tf target/workout-demo.jar
         
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
@@ -67,7 +64,7 @@ jobs:
       - name: 🏗️ Run GraalVM Native Image Build
         run: ./build-native.sh
 
-        
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
