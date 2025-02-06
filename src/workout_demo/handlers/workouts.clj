@@ -1,6 +1,6 @@
 (ns workout-demo.handlers.workouts
     (:require [workout-demo.db.service :refer [get-workouts-between get-workouts-between-with-detail upsert-workout]]
-        [java-time :as jt]
+        [java-time.api :as jt]
         [clojure.spec.alpha :as s]))
 
 (defn start-of-month [year month]

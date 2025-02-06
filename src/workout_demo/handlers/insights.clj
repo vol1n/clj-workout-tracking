@@ -1,6 +1,6 @@
 (ns workout-demo.handlers.insights
     (:require [workout-demo.db.service :refer [get-exercises get-set-data-between]]
-              [java-time :as jt]))
+              [java-time.api :as jt]))
 
 (defn fetch-exercises [username]
   (let [exercises (get-exercises username)]

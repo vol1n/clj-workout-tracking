@@ -1,6 +1,6 @@
 (ns workout-demo.db.seeder
   (:require [datomic.client.api :as d]
-            [java-time :as jt]))
+            [java-time.api :as jt]))
 
 (defn random-workout-type []
   (rand-nth [nil :upper-body :lower-body :run]))
