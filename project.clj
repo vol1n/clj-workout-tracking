@@ -33,7 +33,7 @@
   :aot [workout-demo.lambda]
   :clean-targets ^{:protect false} ["resources/public/js" "target"] 
   :profiles {:dev {:main workout-demo.core}
-             :uberjar {:aot :all
+             :uberjar {:aot [workout-demo.lambda]
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
                        :uberjar-name "output.jar"
                        :main workout-demo.lambda}}
