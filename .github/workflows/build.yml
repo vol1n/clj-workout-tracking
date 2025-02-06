@@ -83,7 +83,6 @@ jobs:
 
       - name: 📤 Upload ZIP to S3
         run: |
-          ls holy-lambda
           aws s3 cp .holy-lambda/deploy/lambda-native.zip s3://workout-demo-lambda-bucket/lambda-native.zip
 
       - name: Install Node.js & AWS CDK
