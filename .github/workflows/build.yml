@@ -28,7 +28,7 @@ jobs:
 
       - name: Verify AWS Login
         run: aws sts get-caller-identity
-        
+
       - name: Generate Docker Tag
         run: echo "DOCKER_TAG=$(date +%s)" >> $GITHUB_ENV  # Generates a unique timestamp tag
 
@@ -76,10 +76,14 @@ jobs:
         run: |
           mv .holy-lambda/build/lambda-binary .holy-lambda/build/bootstrap
           mkdir -p .holy-lambda/deploy
-          zip .holy-lambda/deploy/lambda-native.zip .holy-lambda/build/bootstrap
+          cd .holy-lambda/build
+          zip lambda-native.zip bootstrap
+          cd ../..
+          mv .holy-lambda/build/lambda-native.zip .holy-lambda/deploy
 
       - name: 📤 Upload ZIP to S3
         run: |
+          ls holy-lambda
           aws s3 cp .holy-lambda/deploy/lambda-native.zip s3://workout-demo-lambda-bucket/lambda-native.zip
 
       - name: Install Node.js & AWS CDK
