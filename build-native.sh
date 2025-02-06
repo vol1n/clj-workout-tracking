@@ -18,7 +18,7 @@ container_id=$(docker run -d --rm \
   --verbose)
 
 # Wait for the container to finish the build
-docker logs -f "$container_id"
+docker wait "$container_id"
 
 # Extract binary from the container
 echo "Extracting built binary from Docker container..."
