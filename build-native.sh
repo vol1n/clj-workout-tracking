@@ -29,3 +29,5 @@ docker rm "$container_id"
 
 # Ensure binary is executable
 chmod +x .holy-lambda/build/lambda-binary
+
+ls .holy-lambda/build
