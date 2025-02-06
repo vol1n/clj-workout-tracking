@@ -25,16 +25,17 @@
                  [com.datomic/local "1.0.285"]
                  [com.amazonaws/aws-java-sdk-ssm "1.12.586"]
                  [com.amazonaws/aws-java-sdk-core "1.12.586"]
-                 [com.amazonaws/aws-java-sdk-kms "1.12.586"]]
+                 [com.amazonaws/aws-java-sdk-kms "1.12.586"]
+                 [com.github.clj-easy/graal-build-time "0.1.4"]]
   :plugins [[lein-figwheel "0.5.20"]
             [lein-shadow "0.4.0"]]
   :source-paths ["src", "src_cljs"]
   :aot [workout-demo.lambda]
-  :clean-targets ^{:protect false} ["resources/public/js" "target"]
+  :clean-targets ^{:protect false} ["resources/public/js" "target"] 
   :profiles {:dev {:main workout-demo.core}
              :uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
-                       :uberjar-name "workout-demo.jar"
+                       :uberjar-name "output.jar"
                        :main workout-demo.lambda}}
   :shadow-cljs {:builds
               {:app {:target :browser
@@ -50,4 +51,4 @@
   :aliases {"dev" ["do"
                  ["run" "-m" "workout-demo.core"]
                  ["shadow" "watch" "app"]]}
-  :uberjar-name "workout-demo.jar")
+  :uberjar-name "output.jar")
