@@ -46,8 +46,8 @@ export class BackendLambdaStack extends cdk.Stack {
     const bucketName = "workout-demo-lambda-bucket";
     const objectKey = "lambda-native.zip";
     // Lambda function using native image from zip
-    const lambdaFunction = new lambda.Function(this, 'WorkoutDemoLambda', {
-      functionName: process.env.LAMBDA_FUNCTION_NAME || "WorkoutDemoLambda",
+    const lambdaFunction = new lambda.Function(this, 'NativeWorkoutDemoLambda', {
+      functionName: "NativeWorkoutDemoLambda",
       runtime: lambda.Runtime.PROVIDED_AL2023, 
       handler: "bootstrap", 
       code: lambda.Code.fromBucket(s3.Bucket.fromBucketName(this, 'LambdaBucket', bucketName), objectKey),
