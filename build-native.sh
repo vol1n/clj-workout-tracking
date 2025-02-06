@@ -21,12 +21,6 @@ container_id=$(docker run -d \
 docker logs -f "$container_id" &
 docker wait "$container_id"
 
-# Debug: List all files in /workspace
-echo "Checking container /workspace directory contents..."
-docker exec "$container_id" ls -lah /workspace || true
-docker exec "$container_id" ls -lah /workspace/.holy-lambda/build || true
-docker exec "$container_id" find / -name lambda-binary
-
 # Extract binary from the container
 echo "Extracting built binary from Docker container..."
 docker cp "$container_id":/workspace/lambda-binary .holy-lambda/build/lambda-binary
