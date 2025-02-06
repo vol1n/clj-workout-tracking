@@ -62,6 +62,12 @@ jobs:
       - name: 🏗️ Run GraalVM Native Image Build
         run: ./build-native.sh
 
+      - name: Zip native binary
+        run: |
+          mv .holy-lambda/build/lambda-binary .holy-lambda/build/bootstrap
+          mkdir -p .holy-lambda/deploy
+          zip .holy-lambda/deploy/lambda-native.zip .holy-lambda/build/lambda-binary
+
       - name: 📤 Upload ZIP to S3
         run: |
           aws s3 cp .holy-lambda/deploy/lambda-native.zip s3://workout-demo-lambda-bucket/lambda-native.zip
