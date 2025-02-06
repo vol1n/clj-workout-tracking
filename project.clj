@@ -24,7 +24,7 @@
                  [com.datomic/client-cloud "1.0.130"]
                  [com.datomic/local "1.0.285"]
                  [com.amazonaws/aws-java-sdk-ssm "1.12.586"]
-                 [com.amazonaws/aws-java-sdk-core "1.12.586"]
+                 [com.amazonaws/aws-java-sdk-core "1.12.586" :exclusions [joda-time]]
                  [com.amazonaws/aws-java-sdk-kms "1.12.586"]
                  [com.github.clj-easy/graal-build-time "0.1.4"]]
   :plugins [[lein-figwheel "0.5.20"]
