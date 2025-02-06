@@ -1,11 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 
 export class BackendLambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -44,22 +43,20 @@ export class BackendLambdaStack extends cdk.Stack {
         }),
       }
     });
-
-    // Lambda Function using Docker Image
-    const lambdaFunction = new lambda.DockerImageFunction(this, 'WorkoutDemoLambda', {
+    const bucketName = "workout-demo-lambda-bucket";
+    const objectKey = "lambda-native.zip";
+    // Lambda function using native image from zip
+    const lambdaFunction = new lambda.Function(this, 'WorkoutDemoLambda', {
       functionName: process.env.LAMBDA_FUNCTION_NAME || "WorkoutDemoLambda",
-      code: lambda.DockerImageCode.fromEcr(
-        ecr.Repository.fromRepositoryName(this, 'ECRRepository', repoName),
-        {
-          tag: dockerTag.valueAsString
-        }
-      ),
+      runtime: lambda.Runtime.PROVIDED_AL2023, 
+      handler: "bootstrap", 
+      code: lambda.Code.fromBucket(s3.Bucket.fromBucketName(this, 'LambdaBucket', bucketName), objectKey),
+      memorySize: 512,
+      timeout: cdk.Duration.seconds(30),
       environment: {
         CONFIG_PARAM_NAME: paramName
       },
-      role: lambdaRole,
-      timeout: cdk.Duration.seconds(30),
-      memorySize: 512
+      role: lambdaRole
     });
 
     const api = new apigw.LambdaRestApi(this, 'ApiGwEndpoint', {
