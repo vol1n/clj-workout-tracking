@@ -19,6 +19,16 @@ jobs:
       CDK_FRONTEND_STACK_NAME: FrontendCloudfrontStack
       DOCKER_TAG: latest
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Verify AWS Login
+        run: aws sts get-caller-identity
+        
       - name: Generate Docker Tag
         run: echo "DOCKER_TAG=$(date +%s)" >> $GITHUB_ENV  # Generates a unique timestamp tag
 
