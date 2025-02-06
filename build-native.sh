@@ -11,8 +11,7 @@ docker run --rm \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   graalvm-lambda-builder-jdk21 \
   /usr/lib/graalvm/bin/native-image \
-  --initialize-at-run-time=java_time \
-  --trace-class-initialization=java_time \
+  --features=clj_easy.graal_build_time.InitClojureClasses \
   -jar /workspace/.holy-lambda/build/output.jar \
   -H:Name=lambda-binary \
   --no-fallback
