@@ -99,7 +99,7 @@ jobs:
         run: |
           cd deployment
           npm install
-          cdk deploy ${CDK_BACKEND_STACK_NAME} --require-approval never  LatestZip=lambda-native-${{ github.sha }}.zip
+          cdk deploy ${CDK_BACKEND_STACK_NAME} --require-approval never --parameters LatestZip=lambda-native-${{ github.sha }}.zip
           cd ..
 
       - name: Get API Gateway URL
