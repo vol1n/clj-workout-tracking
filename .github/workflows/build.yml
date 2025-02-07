@@ -19,8 +19,9 @@ jobs:
       CDK_FRONTEND_STACK_NAME: FrontendCloudfrontStack
       DOCKER_TAG: latest
     steps:
-      - name: Check system architecture
-        run: uname -m
+      - name: Install bb
+        run: bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -72,7 +73,10 @@ jobs:
           docker tag ghcr.io/vol1n/graalvm-lambda-builder-jdk21:latest graalvm-lambda-builder-jdk21
 
       - name: 🏗️ Run GraalVM Native Image Build
-        run: ./build-native.sh
+        run: |
+          bb hl:compile
+          bb hl:native:conf
+          bb hl:native:executable
 
       - name: Zip native binary
         run: |
