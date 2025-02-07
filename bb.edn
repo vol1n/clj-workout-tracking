@@ -67,7 +67,7 @@
                                                     "--report-unsupported-elements-at-runtime"
                                                     "-H:+AllowIncompleteClasspath"
                                                     "--no-server"
-                                                    "--initialize-at-build-time=com.fasterxml.jackson"]}}
+                                                    "--initialize-at-build-time=com.fasterxml.jackson"]}
 
  :tasks {:requires            ([holy-lambda.tasks])
          hl:docker:run        holy-lambda.tasks/hl:docker:run
@@ -81,4 +81,4 @@
          hl:compile           holy-lambda.tasks/hl:compile
          hl:doctor            holy-lambda.tasks/hl:doctor
          hl:clean             holy-lambda.tasks/hl:clean
-         hl:version           holy-lambda.tasks/hl:version}
+         hl:version           holy-lambda.tasks/hl:version}}
