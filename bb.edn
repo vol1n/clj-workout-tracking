@@ -33,9 +33,7 @@
                                 ;; You can always build your own GraalVM image with enterprise edition
                                 :image              "graalvm-lambda-builder-jdk21"}
 
-                       :build {:compile-cmd  (if (= "true" (System/getenv "USE_AGENT_CONTEXT"))
-                                            "lein uberjar && mkdir -p .holy-lambda/build && cp target/output.jar .holy-lambda/build/output-agent.jar"
-                                            "lein uberjar && mkdir -p .holy-lambda/build && cp target/output.jar .holy-lambda/build/output.jar")
+                       :build {:compile-cmd  "./hl-custom-compile.sh"}
 
                                ;; Used when either :docker is nil or
                                ;; `HL_NO_DOCKER` environment variable is set to "true"
@@ -83,4 +81,4 @@
          hl:compile           holy-lambda.tasks/hl:compile
          hl:doctor            holy-lambda.tasks/hl:doctor
          hl:clean             holy-lambda.tasks/hl:clean
-         hl:version           holy-lambda.tasks/hl:version}}
+         hl:version           holy-lambda.tasks/hl:version}
