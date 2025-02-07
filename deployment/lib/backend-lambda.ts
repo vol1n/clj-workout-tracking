@@ -26,6 +26,8 @@ export class BackendLambdaStack extends cdk.Stack {
       type: 'String',
       default: '', // Default in case it's not passed
     });
+
+    
     
     const paramName = '/workout-demo/config';
 
