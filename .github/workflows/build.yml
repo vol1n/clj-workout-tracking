@@ -85,7 +85,7 @@ jobs:
 
       - name: 📤 Upload ZIP to S3
         run: |
-          aws s3 cp .holy-lambda/deploy/lambda-native.zip s3://workout-demo-lambda-bucket/lambda-native.zip
+          aws s3 cp .holy-lambda/deploy/lambda-native.zip s3://workout-demo-lambda-bucket/lambda-native-${GITHUB_SHA}.zip
 
       - name: Install Node.js & AWS CDK
         uses: actions/setup-node@v4
@@ -99,7 +99,7 @@ jobs:
         run: |
           cd deployment
           npm install
-          cdk deploy ${CDK_BACKEND_STACK_NAME} --require-approval never  --parameters DockerTag=$DOCKER_TAG
+          cdk deploy ${CDK_BACKEND_STACK_NAME} --require-approval never  --parameters DockerTag=$DOCKER_TAG LatestZip=lambda-native-${GITHUB_SHA}.zip
           cd ..
 
       - name: Get API Gateway URL

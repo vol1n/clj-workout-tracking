@@ -22,7 +22,10 @@ export class BackendLambdaStack extends cdk.Stack {
       default: 'latest', // Default in case it's not passed
     });
 
-    const repoName = process.env.ECR_REPO || "clojure-workout-backend";
+    const latestZip = new cdk.CfnParameter(this, 'LatestZip', {
+      type: 'String',
+      default: '', // Default in case it's not passed
+    });
     
     const paramName = '/workout-demo/config';
 
@@ -50,13 +53,14 @@ export class BackendLambdaStack extends cdk.Stack {
       functionName: "NativeWorkoutDemoLambda",
       runtime: lambda.Runtime.PROVIDED_AL2023, 
       handler: "bootstrap", 
-      code: lambda.Code.fromBucket(s3.Bucket.fromBucketName(this, 'LambdaBucket', bucketName), objectKey),
+      code: lambda.Code.fromBucket(s3.Bucket.fromBucketName(this, 'LambdaBucket', bucketName), latestZip.valueAsString),
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
       environment: {
         CONFIG_PARAM_NAME: paramName
       },
-      role: lambdaRole
+      role: lambdaRole,
+      architecture: lambda.Architecture.X86_64,  // OR .ARM64 depending on your build
     });
 
     const api = new apigw.LambdaRestApi(this, 'ApiGwEndpoint', {
