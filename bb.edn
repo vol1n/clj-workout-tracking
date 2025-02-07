@@ -28,12 +28,12 @@
                                 ;; {:docker "/path-where-to-mount-local-library-on-docker"
                                 ;;  :host   "relative-local-library-path"}
                                 :volumes            []
-                                :platform "linux/amd64"
+                                :platform           "linux/amd64"
                                 ;; GraalVM Community holy-lambda compatible docker image
                                 ;; You can always build your own GraalVM image with enterprise edition
                                 :image              "graalvm-lambda-builder-jdk21"}
 
-                       :build {:compile-cmd  "lein uberjar && mkdir -p .holy-lambda/build && cp target/output.jar .holy-lambda/build/output.jar"}
+                       :build {:compile-cmd         "./hl-custom-compile.sh"}
 
                                ;; Used when either :docker is nil or
                                ;; `HL_NO_DOCKER` environment variable is set to "true"
