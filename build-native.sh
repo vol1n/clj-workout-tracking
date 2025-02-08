@@ -3,6 +3,7 @@ set -e  # Exit on error
 
 echo "Building Uberjar..."
 lein uberjar
+
 mkdir -p .holy-lambda/build
 mv target/output.jar .holy-lambda/build/output.jar
 
@@ -10,6 +11,8 @@ echo "Running GraalVM Native Image Build inside Docker..."
 container_id=$(docker run -d \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   graalvm-lambda-builder-jdk21 \
+  java -agentlib:native-image-agent=config-output-dir=META-INF/native-image -cp /workspace/.holy-lambda/build/output.jar && \
+  cat META-INF/native-image/reflection-config.json && \
   /usr/lib/graalvm/bin/native-image \
   --static \
   --features=clj_easy.graal_build_time.InitClojureClasses \
