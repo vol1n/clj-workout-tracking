@@ -18,6 +18,7 @@ container_id=$(docker run -d \
   --features=clj_easy.graal_build_time.InitClojureClasses \
   -jar /workspace/.holy-lambda/build/output.jar \
   -H:Name=lambda-binary \
+  -H:ReflectionConfigurationFiles=META-INF/native-image/reflection-config.json \
   --no-fallback \
   --verbose)
 
