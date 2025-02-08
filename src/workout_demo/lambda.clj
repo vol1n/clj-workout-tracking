@@ -2,7 +2,8 @@
     (:gen-class)
     (:require [fierycod.holy-lambda-ring-adapter.core :as hlra]
               [fierycod.holy-lambda.core :as h]
-              [workout-demo.routes :refer [app]]))
+              [workout-demo.routes :refer [app]]
+              [fierycod.holy-lambda.custom-runtime :as hl-runtime]))
 
 (defn api-gw->ring [event]
   (let [headers (get event "headers" {})
@@ -32,5 +33,14 @@
 
 (def HttpApiProxyGateway (hlra/ring<->hl-middleware app))
 
-(h/entrypoint [#'HttpApiProxyGateway])
-
+(defn -main
+  [& _]  ;; Ignore CLI args
+  (let [handler-name "workout-demo.lambda.HttpApiProxyGateway"
+        routes {"workout-demo.lambda.HttpApiProxyGateway" #'HttpApiProxyGateway}] 
+    (println "[DEBUG] Using handler:" handler-name)
+    (while true 
+        (hl-runtime/next-iter
+           "localhost:9001"
+           HttpApiProxyGateway
+           routes
+           false))))
