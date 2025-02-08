@@ -36,11 +36,12 @@
 (defn -main
   [& _]  ;; Ignore CLI args
   (let [handler-name "workout-demo.lambda.HttpApiProxyGateway"
-        routes {"workout-demo.lambda.HttpApiProxyGateway" #'HttpApiProxyGateway}] 
+        routes {"workout-demo.lambda.HttpApiProxyGateway" #'HttpApiProxyGateway}
+        runtime-api-url# (System/getenv "AWS_LAMBDA_RUNTIME_API")]
     (println "[DEBUG] Using handler:" handler-name)
     (while true 
         (hl-runtime/next-iter
-           "localhost:9001"
-           HttpApiProxyGateway
+           runtime-api-url#
+           handler-name
            routes
            false))))
