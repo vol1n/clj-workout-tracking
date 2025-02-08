@@ -1,0 +1,12 @@
+{
+    "resources": {
+      "includes": [
+        {
+          "pattern": "com/amazonaws/internal/config/.*"
+        },
+        {
+          "pattern": "com/amazonaws/util/.*"
+        }
+      ]
+    }
+  }

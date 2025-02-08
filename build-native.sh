@@ -18,6 +18,7 @@ container_id=$(docker run -d \
   -jar /workspace/.holy-lambda/build/output.jar \
   -H:Name=lambda-binary \
   -H:ReflectionConfigurationFiles=/workspace/resources/native-image/reflection-config.json \
+  -H:ResourceConfigurationFiles=/workspace/resources/native-image/resource-config.json \
   --no-fallback \
   --verbose)
 
