@@ -11,7 +11,7 @@ echo "Running GraalVM Native Image Build inside Docker..."
 container_id=$(docker run -d \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   graalvm-lambda-builder-jdk21 \
-  mkdir /tmp/native-image && \
+  mkdir test-dir && echo "success" && ls && mkdir -p /tmp/native-image && echo "success" && \
   java -agentlib:native-image-agent=config-output-dir=/tmp/native-image -cp /workspace/.holy-lambda/build/output.jar && \
   ls /tmp/native-image && \
   cat /tmp/native-image/reflection-config.json && \
