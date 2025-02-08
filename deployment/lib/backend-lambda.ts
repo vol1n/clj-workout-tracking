@@ -27,8 +27,6 @@ export class BackendLambdaStack extends cdk.Stack {
       default: '', // Default in case it's not passed
     });
 
-    
-    
     const paramName = '/workout-demo/config';
 
     const lambdaRole = new iam.Role(this, 'LambdaExecutionRole', {
@@ -59,7 +57,8 @@ export class BackendLambdaStack extends cdk.Stack {
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
       environment: {
-        CONFIG_PARAM_NAME: paramName
+        CONFIG_PARAM_NAME: paramName,
+        HL_DEBUG: "true"
       },
       role: lambdaRole,
       architecture: lambda.Architecture.X86_64,  // OR .ARM64 depending on your build
