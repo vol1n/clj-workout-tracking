@@ -75,7 +75,7 @@ jobs:
       - name: HL BB stuff
         run: |
           bb hl:compile
-          bb hl:native:conf || ls -lah .holy-lambda/build/ && pwd && exit 1
+          bb hl:native:conf || ls -lah .holy-lambda/build/ && pwd && java -jar .holy-lambda/build/output-agent.jar && exit 1
           bb hl:native:executable
 
       - name: Zip native binary
