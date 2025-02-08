@@ -12,6 +12,7 @@ container_id=$(docker run -d \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   graalvm-lambda-builder-jdk21 \
   java -agentlib:native-image-agent=config-output-dir=META-INF/native-image -cp /workspace/.holy-lambda/build/output.jar && \
+  ls META-INF/native-image && \
   cat META-INF/native-image/reflection-config.json && \
   /usr/lib/graalvm/bin/native-image \
   --static \
