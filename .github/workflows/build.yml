@@ -72,11 +72,14 @@ jobs:
           docker pull ghcr.io/vol1n/graalvm-lambda-builder-jdk21:latest
           docker tag ghcr.io/vol1n/graalvm-lambda-builder-jdk21:latest graalvm-lambda-builder-jdk21
 
-      - name: HL BB stuff
-        run: |
-          bb hl:compile
-          bb hl:native:conf || ls -lah .holy-lambda/build/ && pwd && java -jar .holy-lambda/build/output-agent.jar && exit 1
-          bb hl:native:executable
+      # - name: HL BB stuff
+      #   run: |
+      #     bb hl:compile
+      #     bb hl:native:conf || ls -lah .holy-lambda/build/ && pwd && java -jar .holy-lambda/build/output-agent.jar && exit 1
+      #     bb hl:native:executable
+
+      - name: Build native binary
+        run: ./build-native.sh
 
       - name: Zip native binary
         run: |
