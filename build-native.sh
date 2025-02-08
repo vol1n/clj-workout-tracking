@@ -11,16 +11,16 @@ echo "Running GraalVM Native Image Build inside Docker..."
 container_id=$(docker run -d \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   graalvm-lambda-builder-jdk21 \
-  mkdir test-dir && echo "success" && ls && mkdir -p /META-INF/native-image && echo "success" && \
-  java -agentlib:native-image-agent=config-output-dir=/META-INF/native-image -cp /workspace/.holy-lambda/build/output.jar && \
-  ls /META-INF/native-image && \
-  cat /META-INF/native-image/reflection-config.json && \
+  mkdir /tmp/native-image && \
+  java -agentlib:native-image-agent=config-output-dir=/tmp/native-image -cp /workspace/.holy-lambda/build/output.jar && \
+  ls /tmp/native-image && \
+  cat /tmp/native-image/reflection-config.json && \
   /usr/lib/graalvm/bin/native-image \
   --static \
   --features=clj_easy.graal_build_time.InitClojureClasses \
   -jar /workspace/.holy-lambda/build/output.jar \
   -H:Name=lambda-binary \
-  -H:ReflectionConfigurationFiles=/META-INF/native-image/reflection-config.json \
+  -H:ReflectionConfigurationFiles=/tmp/native-image/reflection-config.json \
   --no-fallback \
   --verbose)
 
