@@ -102,6 +102,12 @@
         "allDeclaredMethods": true
       },
       {
+        "name": "com.amazonaws.partitions.model.Region",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
         "name": "com.amazonaws.partitions.model.Service",
         "allDeclaredConstructors": true,
         "allDeclaredFields": true,
@@ -115,6 +121,30 @@
       },
       {
         "name": "java.util.HashSet",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
+        "name": "com.fasterxml.jackson.databind.deser.Deserializers",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
+        "name": "com.fasterxml.jackson.databind.deser.KeyDeserializers",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
+        "name": "com.fasterxml.jackson.databind.deser.ValueInstantiators",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
+        "name": "com.fasterxml.jackson.databind.ser.Serializers",
         "allDeclaredConstructors": true,
         "allDeclaredFields": true,
         "allDeclaredMethods": true
