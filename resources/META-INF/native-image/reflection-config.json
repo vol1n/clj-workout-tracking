@@ -70,5 +70,11 @@
         "allDeclaredConstructors": true,
         "allDeclaredFields": true,
         "allDeclaredMethods": true
+      },
+      {
+        "name": "com.amazonaws.internal.config.HostRegexToRegionMappingJsonHelper",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
       }
 ]
