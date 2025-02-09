@@ -7,7 +7,8 @@
                  [org.clojure/clojurescript "1.11.60"]
                  [com.google.javascript/closure-compiler-unshaded "v20220301"]
                  [reagent "1.2.0"]
-                 [ring/ring-defaults "0.3.3"]
+                 [ring/ring-defaults "0.3.3"
+                  :exclusions [joda-time]]
                  [compojure "1.6.2"]
                  [ring/ring-jetty-adapter "1.9.5"]
                  [ring/ring-json "0.5.1"]
@@ -21,7 +22,8 @@
                  [com.auth0/java-jwt "4.4.0"]
                  [io.github.FieryCod/holy-lambda "0.6.7"]
                  [io.github.FieryCod/holy-lambda-ring-adapter "0.1.2"]
-                 [com.datomic/client-cloud "1.0.130"]
+                 [com.datomic/client-cloud "1.0.130"
+                 :exclusions [joda-time]]
                  [com.datomic/local "1.0.285"]
                  [software.amazon.awssdk/ssm "2.30.16"
                  :exclusions [org.apache.httpcomponents.client5/httpclient5]]
