@@ -216,5 +216,11 @@
         "allDeclaredConstructors": true,
         "allDeclaredFields": true,
         "allDeclaredMethods": true
+      },
+      {
+        "name": "com.auth0.jwt.JWT",
+        "allDeclaredConstructors": true,
+        "allDeclaredMethods": true,
+        "allDeclaredFields": true
       }
 ]
