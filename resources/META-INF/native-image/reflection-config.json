@@ -120,6 +120,12 @@
         "allDeclaredMethods": true
       },
       {
+        "name": "com.amazonaws.partitions.model.CredentialScope",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
         "name": "java.util.HashSet",
         "allDeclaredConstructors": true,
         "allDeclaredFields": true,

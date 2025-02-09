@@ -2,8 +2,8 @@
   (:require [aero.core :refer [read-config]]
             [clojure.java.io :as io]
             [clojure.edn :as edn])
-  (:import [com.amazonaws.services.simplesystemsmanagement AWSSimpleSystemsManagementClientBuilder]
-           [com.amazonaws.services.simplesystemsmanagement.model GetParameterRequest]))
+  (:import [software.amazon.awssdk.services.ssm SsmClient]
+           [software.amazon.awssdk.services.ssm.model GetParameterRequest]))
 
 (defn load-local-config []
   (if-let [resource (io/resource "config.edn")]
@@ -11,13 +11,14 @@
     (throw (ex-info "❌ config.edn not found!" {})))) 
 
 (defn fetch-config-ssm []
-  (let [ssm-client (-> (AWSSimpleSystemsManagementClientBuilder/defaultClient))
+  (let [ssm-client (SsmClient/create)  ;; Create SSM client
         param-name (System/getenv "CONFIG_PARAM_NAME") ;; Read parameter name from env
-        request (doto (GetParameterRequest.)
-                  (.setName param-name)
-                  (.setWithDecryption true))
+        request (-> (GetParameterRequest/builder)
+                    (.name param-name)
+                    (.withDecryption true)
+                    .build)
         response (.getParameter ssm-client request)
-        config (.getValue (.getParameter response))]
+        config (.value response)]  ;; Fetch value from response
     (println "Fetched config from SSM: " config)
     (edn/read-string config)))
 
