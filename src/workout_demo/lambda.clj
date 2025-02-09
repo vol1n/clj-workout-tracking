@@ -40,9 +40,9 @@
         routes {"workout-demo.lambda.HttpApiProxyGateway" #'HttpApiProxyGateway}
         runtime-api-url# (System/getenv "AWS_LAMBDA_RUNTIME_API")]
     (println "[DEBUG] Using handler:" handler-name)
-    (if (= (System/getproperty "executor") "native-agent")
+    (if (= (System/getProperty "executor") "native-agent")
         (hl-agent/routes->reflective-call! routes) 
-        (while true 
+        (while true
             (hl-runtime/next-iter
                runtime-api-url#
                handler-name
