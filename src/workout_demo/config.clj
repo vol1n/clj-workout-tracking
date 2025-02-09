@@ -13,7 +13,7 @@
 (defn fetch-config-ssm []
   (let [ssm-client (SsmClient/create)  ;; Create SSM client
         param-name (System/getenv "CONFIG_PARAM_NAME") ;; Read parameter name from env
-        request (->
+        ^software.amazon.awssdk.services.ssm.model.GetParameterRequest request (->
             (GetParameterRequest/builder)
             (.name param-name)
             (.withDecryption true)
