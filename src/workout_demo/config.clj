@@ -13,14 +13,13 @@
 (defn fetch-config-ssm []
   (let [ssm-client (SsmClient/create)  ;; Create SSM client
         param-name (System/getenv "CONFIG_PARAM_NAME") ;; Read parameter name from env
-        request (-> (GetParameterRequest/builder)
-                    (.name param-name)
-                    (.withDecryption true)
-                    .build)
-        response (.getParameter ssm-client request)
-        config (.value response)]  ;; Fetch value from response
-    (println "Fetched config from SSM: " config)
-    (edn/read-string config)))
+        builder (GetParameterRequest/builder)]  ;; Fetch value from response
+    (.name builder param-name)
+    (.withDecryption builder true)
+    (let [request (.build builder)
+          response (.getParameter ssm-client request)
+          config (.value response)]
+    (edn/read-string config))))
 
 (defonce config (delay (try
                     (fetch-config-ssm)
