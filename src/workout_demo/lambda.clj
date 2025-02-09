@@ -3,7 +3,8 @@
     (:require [fierycod.holy-lambda-ring-adapter.core :as hlra]
               [fierycod.holy-lambda.core :as h]
               [workout-demo.routes :refer [app]]
-              [fierycod.holy-lambda.custom-runtime :as hl-runtime]))
+              [fierycod.holy-lambda.custom-runtime :as hl-runtime]
+              [fierycod.holy-lambda.agent :as hl-agent]))
 
 (defn api-gw->ring [event]
   (let [headers (get event "headers" {})
@@ -39,9 +40,11 @@
         routes {"workout-demo.lambda.HttpApiProxyGateway" #'HttpApiProxyGateway}
         runtime-api-url# (System/getenv "AWS_LAMBDA_RUNTIME_API")]
     (println "[DEBUG] Using handler:" handler-name)
-    (while true 
-        (hl-runtime/next-iter
-           runtime-api-url#
-           handler-name
-           routes
-           false))))
+    (if (= (System/getproperty "executor") "native-agent")
+        (hl-agent/routes->reflective-call! routes) 
+        (while true 
+            (hl-runtime/next-iter
+               runtime-api-url#
+               handler-name
+               routes
+               false)))))
