@@ -112,5 +112,11 @@
         "allDeclaredConstructors": true,
         "allDeclaredFields": true,
         "allDeclaredMethods": true
+      },
+      {
+        "name": "java.util.HashSet",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
       }
 ]
