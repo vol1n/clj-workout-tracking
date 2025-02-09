@@ -19,13 +19,14 @@ container_id=$(docker run -d \
   set -x && \
   java -Dexecutor=native-agent -agentlib:native-image-agent=config-output-dir=/workspace/resources/native-image -jar .holy-lambda/build/output.jar && \
   echo "agented" && \
+  cat /workspace/resources/native-image/reflect-config.json && \
   ls /workspace/resources/native-image && \
   /usr/lib/graalvm/bin/native-image \
   --static \
   --features=clj_easy.graal_build_time.InitClojureClasses \
   -jar /workspace/.holy-lambda/build/output.jar \
   -H:Name=lambda-binary \
-  -H:ReflectionConfigurationFiles=/workspace/resources/native-image/reflection-config.json \
+  -H:ReflectionConfigurationFiles=/workspace/resources/native-image/reflect-config.json \
   -H:ResourceConfigurationFiles=/workspace/resources/native-image/resource-config.json \
   -H:SerializationConfigurationFiles=/workspace/resources/native-image/serialization-config.json \
   -H:DynamicProxyConfigurationFiles=/workspace/resources/native-image/proxy-config.json \
