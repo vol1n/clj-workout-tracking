@@ -10,7 +10,6 @@
     (read-config resource)
     (throw (ex-info "❌ config.edn not found!" {})))) 
 
-
 (defn fetch-config-ssm []
   (let [ssm-client (-> (AWSSimpleSystemsManagementClientBuilder/defaultClient))
         param-name (System/getenv "CONFIG_PARAM_NAME") ;; Read parameter name from env
@@ -26,6 +25,7 @@
                     (fetch-config-ssm)
                     (catch Exception e
                       (println "Error loading config from env, falling back to local:" (.getMessage e))
+                      (.printStackTrace e)
                       (load-local-config)))))
 
 (defn get-config []
