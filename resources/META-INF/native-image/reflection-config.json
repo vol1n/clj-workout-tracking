@@ -64,5 +64,11 @@
         "allDeclaredConstructors": true,
         "allDeclaredFields": true,
         "allDeclaredMethods": true
+      },
+      {
+        "name": "com.amazonaws.internal.config.JsonIndex",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
       }
 ]
