@@ -11,7 +11,7 @@ echo "Running GraalVM Native Image Build inside Docker..."
 container_id=$(docker run -d \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   -v "$(pwd)/resources/META-INF/native-image:/workspace/resources/native-image" \
-  graalvm-lambda-builder-jdk21 \
+  graalvm-lambda-builder-jdk21 sh -c "\
   mkdir -p /workspace/resources/native-image && \
   chmod -R 777 /workspace/resources/native-image && \
   echo "made " && \
@@ -27,7 +27,7 @@ container_id=$(docker run -d \
   -H:ResourceConfigurationFiles=/workspace/resources/native-image/resource-config.json \
   -H:DynamicProxyConfigurationFiles=/workspace/resources/native-image/proxy-config.json \
   --no-fallback \
-  --verbose)
+  --verbose")
 
 # Wait for the container to finish the build
 docker logs -f "$container_id" &
