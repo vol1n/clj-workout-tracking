@@ -19,7 +19,7 @@
                  [cheshire "5.11.0"]
                  [ring-cors "0.1.13"]
                  [aero "1.1.6"]
-                 [com.auth0/java-jwt "4.4.0"]
+                 [com.auth0/java-jwt "4.5.0"]
                  [io.github.FieryCod/holy-lambda "0.6.7"]
                  [io.github.FieryCod/holy-lambda-ring-adapter "0.1.2"]
                  [com.datomic/client-cloud "1.0.130"
