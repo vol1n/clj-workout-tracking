@@ -12,6 +12,7 @@ container_id=$(docker run -d \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   -v "$(pwd)/resources/META-INF/native-image:/workspace/resources/native-image" \
   graalvm-lambda-builder-jdk21 sh -c " \
+  set -x && \
   java -agentlib:native-image-agent=config-output-dir=/workspace/resources/native-image -jar .holy-lambda/build/output.jar && \
   echo "agented" && \
   ls /workspace/resources/native-image && \
