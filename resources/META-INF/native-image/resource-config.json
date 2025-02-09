@@ -6,6 +6,9 @@
         },
         {
           "pattern": "com/amazonaws/util/.*"
+        },
+        {
+            "pattern": "com/amazonaws/sdk/versionInfo\\.properties"
         }
       ]
     }
