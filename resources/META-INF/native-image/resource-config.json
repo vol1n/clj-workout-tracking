@@ -9,6 +9,9 @@
         },
         {
             "pattern": "com/amazonaws/sdk/versionInfo\\.properties"
+        },
+        {
+            "pattern": "com/amazonaws/partitions/endpoints\\.json"
         }
       ]
     }
