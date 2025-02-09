@@ -90,6 +90,12 @@
         "allDeclaredMethods": true
       },
       {
+        "name": "com.amazonaws.partitions.model.Partition",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
         "name": "com.amazonaws.partitions.model.RegionJsonHelper",
         "allDeclaredConstructors": true,
         "allDeclaredFields": true,
