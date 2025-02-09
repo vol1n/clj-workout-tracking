@@ -11,11 +11,7 @@ echo "Running GraalVM Native Image Build inside Docker..."
 container_id=$(docker run -d \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
   -v "$(pwd)/resources/META-INF/native-image:/workspace/resources/native-image" \
-  graalvm-lambda-builder-jdk21 sh -c "\
-  mkdir -p /workspace/resources/native-image && \
-  chmod -R 777 /workspace/resources/native-image && \
-  ls -lah /workspace/resources/native-image && \
-  echo "made " && \
+  graalvm-lambda-builder-jdk21 sh -c " \
   java -agentlib:native-image-agent=config-output-dir=/workspace/resources/native-image -jar .holy-lambda/build/output.jar && \
   echo "agented" && \
   ls /workspace/resources/native-image && \
