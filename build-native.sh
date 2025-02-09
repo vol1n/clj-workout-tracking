@@ -20,7 +20,6 @@ container_id=$(docker run -d \
   /usr/lib/graalvm/bin/native-image \
   --static \
   --features=clj_easy.graal_build_time.InitClojureClasses \
-  --initialize-at-run-time=org.slf4j.LoggerFactory \
   -jar /workspace/.holy-lambda/build/output.jar \
   -H:Name=lambda-binary \
   -H:ReflectionConfigurationFiles=/workspace/resources/native-image/reflection-config.json \

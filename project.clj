@@ -30,7 +30,9 @@
                  [software.amazon.awssdk/kms "2.30.16"
                  :exclusions [org.apache.httpcomponents.client5/httpclient5]]
                  [com.github.clj-easy/graal-build-time "1.0.5"]
-                 [org.apache.httpcomponents/httpclient "4.5.13"]]
+                 [org.apache.httpcomponents/httpclient "4.5.13"]
+                 [ch.qos.logback/logback-classic "1.4.11"]
+                 [ch.qos.logback/logback-core "1.4.11"]]
   :plugins [[lein-figwheel "0.5.20"]
             [lein-shadow "0.4.0"]]
   :source-paths ["src", "src_cljs"]
