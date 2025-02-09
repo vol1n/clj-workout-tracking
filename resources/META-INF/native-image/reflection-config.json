@@ -82,5 +82,17 @@
         "allDeclaredConstructors": true,
         "allDeclaredMethods": true,
         "allDeclaredFields": true
+      },
+      {
+        "name": "com.amazonaws.partitions.model.Partitions",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
+        "name": "com.amazonaws.partitions.model.RegionJsonHelper",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
       }
 ]
