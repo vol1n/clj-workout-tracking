@@ -26,7 +26,10 @@
                     (catch Exception e
                       (println "Error loading config from env, falling back to local:" (.getMessage e))
                       (.printStackTrace e)
-                      (load-local-config)))))
+                      (try 
+                        (load-local-config)
+                        (catch Exception e
+                          (println "Error loading config from local:" (.getMessage e))))))))
 
 (defn get-config []
   @config)
