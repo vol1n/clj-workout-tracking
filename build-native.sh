@@ -7,6 +7,10 @@ lein uberjar
 mkdir -p .holy-lambda/build
 mv target/output.jar .holy-lambda/build/output.jar
 
+# -H:ReflectionConfigurationFiles=/workspace/resources/native-image/reflection-config.json \
+# -H:ResourceConfigurationFiles=/workspace/resources/native-image/resource-config.json \
+# -H:DynamicProxyConfigurationFiles=/workspace/resources/native-image/proxy-config.json \
+
 echo "Running GraalVM Native Image Build inside Docker..."
 container_id=$(docker run -d \
   -v "$(pwd)/.holy-lambda:/workspace/.holy-lambda" \
@@ -23,7 +27,10 @@ container_id=$(docker run -d \
   -H:Name=lambda-binary \
   -H:ReflectionConfigurationFiles=/workspace/resources/native-image/reflection-config.json \
   -H:ResourceConfigurationFiles=/workspace/resources/native-image/resource-config.json \
+  -H:SerializationConfigurationFiles=/workspace/resources/native-image/serialization-config.json \
   -H:DynamicProxyConfigurationFiles=/workspace/resources/native-image/proxy-config.json \
+  -H:JNIConfigurationFiles=/workspace/resources/native-image/jni-config.json \
+  -H:PredefinedClassesConfigurationFiles=/workspace/resources/native-image/predefined-classes-config.json \
   --no-fallback \
   --verbose")
 
