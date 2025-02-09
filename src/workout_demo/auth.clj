@@ -32,6 +32,12 @@
           algorithm (Algorithm/HMAC256 (:jwt-secret config))
           verifier  (-> (JWT/require algorithm) (.build))
           decoded   (.verify verifier token)]
+        (println "verifying jwt")
+        (println token)
+        (println config)
+        (println algorithm)
+        (println verifier)
+        (println decoded)
       {:username (.getSubject decoded)
        :role (.asString (.getClaim decoded "role"))}) 
     (catch Exception _ nil))) 
