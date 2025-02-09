@@ -3,7 +3,6 @@
   :url "localhost:3000"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
-  :managed-dependencies [[org.slf4j/slf4j-api nil]]
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/clojurescript "1.11.60"]
                  [com.google.javascript/closure-compiler-unshaded "v20220301"]
@@ -16,7 +15,8 @@
                  [clojure.java-time "1.4.3"]
                  [thheller/shadow-cljs "2.18.0"]
                  [cljs-ajax "0.8.4"]
-                 [ch.qos.logback/logback-classic "1.4.11"]
+                 [ch.qos.logback/logback-classic "1.4.11"
+                 :exclusions [org.slf4j/slf4j-api]]
                  [cheshire "5.11.0"]
                  [ring-cors "0.1.13"]
                  [aero "1.1.6"]
