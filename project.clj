@@ -13,8 +13,7 @@
                  [ring/ring-jetty-adapter "1.9.5"]
                  [ring/ring-json "0.5.1"]
                  [clojure.java-time "1.4.3"]
-                 [thheller/shadow-cljs "2.18.0"
-                  :exclusions [org.slf4j/slf4j-api]]
+                 [thheller/shadow-cljs "2.18.0"]
                  [cljs-ajax "0.8.4"]
                  [cheshire "5.11.0"]
                  [ring-cors "0.1.13"]
@@ -30,7 +29,8 @@
                  [software.amazon.awssdk/kms "2.30.16"
                  :exclusions [org.apache.httpcomponents.client5/httpclient5]]
                  [com.github.clj-easy/graal-build-time "1.0.5"]
-                 [org.apache.httpcomponents/httpclient "4.5.13"]]
+                 [org.apache.httpcomponents/httpclient "4.5.13"]
+                 [org.slf4j/slf4j-nop "2.0.7"]]
   :plugins [[lein-figwheel "0.5.20"]
             [lein-shadow "0.4.0"]]
   :source-paths ["src", "src_cljs"]
