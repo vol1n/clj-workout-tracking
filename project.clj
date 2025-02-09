@@ -16,8 +16,6 @@
                  [thheller/shadow-cljs "2.18.0"
                   :exclusions [org.slf4j/slf4j-api]]
                  [cljs-ajax "0.8.4"]
-                 [ch.qos.logback/logback-classic "1.4.11"
-                 :exclusions [org.slf4j/slf4j-api]]
                  [cheshire "5.11.0"]
                  [ring-cors "0.1.13"]
                  [aero "1.1.6"]
@@ -28,11 +26,9 @@
                  :exclusions [joda-time]]
                  [com.datomic/local "1.0.285"]
                  [software.amazon.awssdk/ssm "2.30.16"
-                 :exclusions [org.apache.httpcomponents.client5/httpclient5
-                              org.slf4j/slf4j-api]]
+                 :exclusions [org.apache.httpcomponents.client5/httpclient5]]
                  [software.amazon.awssdk/kms "2.30.16"
-                 :exclusions [org.apache.httpcomponents.client5/httpclient5
-                              org.slf4j/slf4j-api]]
+                 :exclusions [org.apache.httpcomponents.client5/httpclient5]]
                  [com.github.clj-easy/graal-build-time "1.0.5"]
                  [org.apache.httpcomponents/httpclient "4.5.13"]]
   :plugins [[lein-figwheel "0.5.20"]
