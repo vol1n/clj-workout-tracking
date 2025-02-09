@@ -14,10 +14,10 @@
   (let [ssm-client (SsmClient/create)  ;; Create SSM client
         param-name (System/getenv "CONFIG_PARAM_NAME") ;; Read parameter name from env
         response (.getParameter ssm-client 
-            (proxy [java.util.function.Consumer] []
-                     (accept [builder]
-                       (.name builder param-name)
-                       (.withDecryption builder true))))
+            (reify java.util.function.Consumer
+                       (accept [_ builder]
+                         (.name builder param-name)
+                         (.withDecryption builder true))))
         config (.value response)]
     (edn/read-string config)))
 
