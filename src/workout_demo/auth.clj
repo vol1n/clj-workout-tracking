@@ -40,4 +40,7 @@
         (println decoded)
       {:username (.getSubject decoded)
        :role (.asString (.getClaim decoded "role"))}) 
-    (catch Exception _ nil))) 
+    (catch Exception e
+      (println "JWT verification failed:" (.getMessage e))
+      (.printStackTrace e)   ;; 🛠 Print full stack trace
+      nil)))
