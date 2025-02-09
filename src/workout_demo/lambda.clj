@@ -41,7 +41,7 @@
         runtime-api-url# (System/getenv "AWS_LAMBDA_RUNTIME_API")]
     (println "[DEBUG] Using handler:" handler-name)
     (if (= (System/getProperty "executor") "native-agent")
-        (hl-agent/routes->reflective-call! routes) 
+        (#'hl-agent/routes->reflective-call! routes) ;; Treat the function as a var to call even though it's private
         (while true
             (hl-runtime/next-iter
                runtime-api-url#
