@@ -159,5 +159,20 @@
         "name": "org.slf4j.LoggerFactory",
         "allDeclaredConstructors": true,
         "allDeclaredMethods": true
+      },
+      {
+        "name": "software.amazon.awssdk.services.ssm.SsmClient",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true
+      },
+      {
+        "name": "software.amazon.awssdk.services.ssm.model.GetParameterRequest",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true
+      },
+      {
+        "name": "software.amazon.awssdk.services.ssm.model.GetParameterResponse",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true
       }
 ]
