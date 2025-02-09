@@ -237,5 +237,11 @@
         "name": "com.auth0.jwt.DecodedJWT",
         "allDeclaredMethods": true,
         "allDeclaredConstructors": true
+      },
+      {
+        "name": "com.fasterxml.jackson.databind.node.TextNode",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true
       }
 ]
