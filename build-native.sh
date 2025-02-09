@@ -22,12 +22,9 @@ container_id=$(docker run -d \
   --features=clj_easy.graal_build_time.InitClojureClasses \
   -jar /workspace/.holy-lambda/build/output.jar \
   -H:Name=lambda-binary \
-  -H:ReflectionConfigurationFiles=/workspace/resources/native-image/reflect-config.json \
+  -H:ReflectionConfigurationFiles=/workspace/resources/native-image/reflection-config.json \
   -H:ResourceConfigurationFiles=/workspace/resources/native-image/resource-config.json \
-  -H:SerializationConfigurationFiles=/workspace/resources/native-image/serialization-config.json \
   -H:DynamicProxyConfigurationFiles=/workspace/resources/native-image/proxy-config.json \
-  -H:JNIConfigurationFiles=/workspace/resources/native-image/jni-config.json \
-  -H:PredefinedClassesConfigurationFiles=/workspace/resources/native-image/predefined-classes-config.json \
   --no-fallback \
   --verbose")
 
