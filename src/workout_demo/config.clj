@@ -16,8 +16,9 @@
         response (.getParameter ssm-client 
             (reify java.util.function.Consumer
                        (accept [_ builder]
+                        (doto builder 
                          (.name builder param-name)
-                         (.withDecryption builder true))))
+                         (.withDecryption builder true)))))
         config (.value response)]
     (edn/read-string config)))
 
