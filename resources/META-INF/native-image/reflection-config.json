@@ -192,5 +192,23 @@
         "allDeclaredMethods": true,
         "allDeclaredConstructors": true,
         "allDeclaredFields": true
+      },
+      {
+        "name": "com.auth0.jwt.algorithms.Algorithm",
+        "allDeclaredConstructors": true,
+        "allDeclaredMethods": true,
+        "allDeclaredFields": true
+      },
+      {
+        "name": "com.auth0.jwt.algorithms.RSAAlgorithm",
+        "allDeclaredConstructors": true,
+        "allDeclaredMethods": true,
+        "allDeclaredFields": true
+      },
+      {
+        "name": "com.auth0.jwt.algorithms.HMACAlgorithm",
+        "allDeclaredConstructors": true,
+        "allDeclaredMethods": true,
+        "allDeclaredFields": true
       }
 ]
