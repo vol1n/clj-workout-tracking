@@ -164,7 +164,7 @@
         "name": "software.amazon.awssdk.services.ssm.SsmClient",
         "allDeclaredMethods": true,
         "allDeclaredConstructors": true,
-        "allDeclaredFields": "true"
+        "allDeclaredFields": true
       },
       {
         "name": "software.amazon.awssdk.services.ssm.model.GetParameterRequest",
