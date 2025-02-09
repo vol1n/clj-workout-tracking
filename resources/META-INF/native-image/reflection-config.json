@@ -76,5 +76,11 @@
         "allDeclaredConstructors": true,
         "allDeclaredFields": true,
         "allDeclaredMethods": true
+      },
+      {
+        "name": "com.amazonaws.internal.config.PartitionMetadataJsonHelper",
+        "allDeclaredConstructors": true,
+        "allDeclaredMethods": true,
+        "allDeclaredFields": true
       }
 ]
