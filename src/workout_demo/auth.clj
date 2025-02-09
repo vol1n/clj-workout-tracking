@@ -31,7 +31,7 @@
     (let [config (get-config)
           algorithm (Algorithm/HMAC256 (:jwt-secret config))
           verifier  (-> (JWT/require algorithm) (.build))
-          ^com.auth0.jwt.DecodedJWT decoded (.verify verifier token)]
+          ^com.auth0.jwt.interfaces.DecodedJWT decoded (.verify verifier token)]
         (println "Decoded JWT class:" (class decoded))
         {:username (.getSubject decoded)
          :role (.asString (.getClaim decoded "role"))}) 
