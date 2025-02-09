@@ -34,5 +34,11 @@
         "allPublicMethods" : true,
         "allDeclaredClasses" : true,
         "allPublicClasses" : true
+      },
+      {
+        "name": "com.amazonaws.internal.config.InternalConfigJsonHelper",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
       }
 ]
