@@ -168,11 +168,25 @@
       {
         "name": "software.amazon.awssdk.services.ssm.model.GetParameterRequest",
         "allDeclaredMethods": true,
-        "allDeclaredConstructors": true
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true
       },
       {
         "name": "software.amazon.awssdk.services.ssm.model.GetParameterResponse",
         "allDeclaredMethods": true,
-        "allDeclaredConstructors": true
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true
+      },
+      {
+        "name": "software.amazon.awssdk.services.ssm.model.GetParameterRequest$Builder",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true
+      },
+      {
+        "name": "software.amazon.awssdk.services.ssm.model.GetParameterResponse$Builder",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true
       }
 ]
