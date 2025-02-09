@@ -227,5 +227,10 @@
         "name": "com.auth0.jwt.JWTVerifier",
         "allDeclaredMethods": true,
         "allDeclaredConstructors": true
+      },
+      {
+        "name": "com.auth0.jwt.exceptions.JWTDecoder",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true
       }
 ]
