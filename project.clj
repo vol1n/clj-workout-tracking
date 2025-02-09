@@ -23,9 +23,12 @@
                  [io.github.FieryCod/holy-lambda-ring-adapter "0.1.2"]
                  [com.datomic/client-cloud "1.0.130"]
                  [com.datomic/local "1.0.285"]
-                 [software.amazon.awssdk/ssm "2.30.16"]
-                 [software.amazon.awssdk/kms "2.30.16"]
-                 [com.github.clj-easy/graal-build-time "1.0.5"]]
+                 [software.amazon.awssdk/ssm "2.30.16"
+                 :exclusions [org.apache.httpcomponents.client5/httpclient5]]
+                 [software.amazon.awssdk/kms "2.30.16"
+                 :exclusions [org.apache.httpcomponents.client5/httpclient5]]
+                 [com.github.clj-easy/graal-build-time "1.0.5"]
+                 [org.apache.httpcomponents/httpclient "4.5.13"]]
   :plugins [[lein-figwheel "0.5.20"]
             [lein-shadow "0.4.0"]]
   :source-paths ["src", "src_cljs"]
