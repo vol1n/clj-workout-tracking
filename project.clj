@@ -13,7 +13,8 @@
                  [ring/ring-jetty-adapter "1.9.5"]
                  [ring/ring-json "0.5.1"]
                  [clojure.java-time "1.4.3"]
-                 [thheller/shadow-cljs "2.18.0"]
+                 [thheller/shadow-cljs "2.18.0"
+                  :exclusions [org.slf4j/slf4j-api]]
                  [cljs-ajax "0.8.4"]
                  [ch.qos.logback/logback-classic "1.4.11"
                  :exclusions [org.slf4j/slf4j-api]]
@@ -27,9 +28,11 @@
                  :exclusions [joda-time]]
                  [com.datomic/local "1.0.285"]
                  [software.amazon.awssdk/ssm "2.30.16"
-                 :exclusions [org.apache.httpcomponents.client5/httpclient5]]
+                 :exclusions [org.apache.httpcomponents.client5/httpclient5
+                              org.slf4j/slf4j-api]]
                  [software.amazon.awssdk/kms "2.30.16"
-                 :exclusions [org.apache.httpcomponents.client5/httpclient5]]
+                 :exclusions [org.apache.httpcomponents.client5/httpclient5
+                              org.slf4j/slf4j-api]]
                  [com.github.clj-easy/graal-build-time "1.0.5"]
                  [org.apache.httpcomponents/httpclient "4.5.13"]]
   :plugins [[lein-figwheel "0.5.20"]
