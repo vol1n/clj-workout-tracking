@@ -19,8 +19,12 @@
             (.withDecryption true)
             (.build))
         response (.getParameter ssm-client request)
-        config (.value response)]
-    (edn/read-string config)))
+        config (some-> response
+                   (.parameter)
+                   (.value))]
+    (if (nil? config)
+        (throw (ex-info "❌ CONFIG_PARAM_NAME not found in SSM" {}))
+    (edn/read-string config))))
 
 (defonce config (delay (try
                     (fetch-config-ssm)

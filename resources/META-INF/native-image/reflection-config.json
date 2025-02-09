@@ -162,18 +162,18 @@
       },
       {
         "name": "software.amazon.awssdk.services.ssm.SsmClient",
-        "allDeclaredMethods": true,
-        "allDeclaredConstructors": true,
-        "allDeclaredFields": true
-      },
-      {
-        "name": "software.amazon.awssdk.services.ssm.model.GetParameterRequest",
         "methods": [
       {
         "name": "getParameter",
         "parameterTypes": ["software.amazon.awssdk.services.ssm.model.GetParameterRequest"]
       }
     ]
+      },
+      {
+        "name": "software.amazon.awssdk.services.ssm.model.GetParameterRequest",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true
       },
       {
         "name": "software.amazon.awssdk.services.ssm.model.GetParameterResponse",
