@@ -51,10 +51,12 @@
   (fn [request]
     (println "request " request)
     (println (:headers request))
-    (let [token (get-in request [:headers "authorization"])
-        token (when token (second (re-find #"Bearer (.+)" token)))
+    (let [token-string (get-in request [:headers "authorization"])
+        token (when token-string (second (re-find #"Bearer (.+)" token-string)))
         user  (when token (verify-jwt token))]
+      (println "token-string " token-string)
       (println "toked " token)
+      (println user)
       (if user
         (handler (assoc request :user user))
         (unauthorized-response)))))
