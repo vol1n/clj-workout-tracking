@@ -19,6 +19,7 @@ container_id=$(docker run -d \
   -H:Name=lambda-binary \
   -H:ReflectionConfigurationFiles=/workspace/resources/native-image/reflection-config.json \
   -H:ResourceConfigurationFiles=/workspace/resources/native-image/resource-config.json \
+  -H:DynamicProxyConfigurationFiles=/workspace/resources/native-image/proxy-config.json \
   --no-fallback \
   --verbose)
 
