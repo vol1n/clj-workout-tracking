@@ -40,5 +40,29 @@
         "allDeclaredConstructors": true,
         "allDeclaredFields": true,
         "allDeclaredMethods": true
+      },
+      {
+        "name": "com.amazonaws.internal.config.SignerConfigJsonHelper",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
+        "name": "com.amazonaws.internal.config.HostNameImmutableListJsonHelper",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
+        "name": "com.amazonaws.internal.config.HttpClientConfigJsonHelper",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
+      },
+      {
+        "name": "com.amazonaws.internal.config.ServiceMetadataJsonHelper",
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true
       }
 ]
