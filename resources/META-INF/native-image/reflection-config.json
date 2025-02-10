@@ -243,5 +243,23 @@
         "allDeclaredMethods": true,
         "allDeclaredConstructors": true,
         "allDeclaredFields": true
+      },
+      {
+        "name": "datomic.client.api.sync",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true
+      },
+      {
+        "name": "datomic.client.api.impl",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true
+      },
+      {
+        "name": "datomic.client.api.Datomic",
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true,
+        "allDeclaredFields": true
       }
 ]
