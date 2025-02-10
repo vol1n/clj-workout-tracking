@@ -31,10 +31,10 @@
     (let [config (get-config)
           algorithm (Algorithm/HMAC256 (:jwt-secret config))
           verifier  (-> (JWT/require algorithm) (.build))
-          ^com.auth0.jwt.interfaces.DecodedJWT decoded (.verify verifier token)]
-        (println "Decoded JWT class:" (class decoded))
-        {:username (.getSubject decoded)
-         :role (.asString (.getClaim decoded "role"))}) 
+          ^com.auth0.jwt.interfaces.DecodedJWT verified (.verify verifier token)]
+        (println "Decoded JWT class:" (class verified))
+        {:username (.getSubject verified)
+         :role (.asString (.getClaim verified "role"))}) 
     (catch Exception e
       (println "JWT verification failed:" (.getMessage e))
       (.printStackTrace e)   ;; 🛠 Print full stack trace

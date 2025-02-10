@@ -26,17 +26,22 @@
 
 (defn get-workouts-between-with-detail [start-date end-date username]
     (let [conn (get-conn)]
-        (d/q '[:find (pull ?workout [:db/id
+        (d/q '[:find (pull ?workout 
+          [:db/id
            :workout/timestamp
            {:workout/template 
-            [:workout.template/name 
+            [:db/id
+             :workout.template/name 
              :workout.template/symbol]}
            {:workout/exercises
-            [{:workout.completed-exercise/exercise
-             [:workout.exercise/name
+            [:db/id 
+             {:workout.completed-exercise/exercise
+             [:db/id
+              :workout.exercise/name
               :workout.exercise/tracking-type]}
              {:workout.completed-exercise/sets
-             [:workout.set/weight
+             [:db/id
+              :workout.set/weight
               :workout.set/reps
               :workout.time/time]}]}])
            :in $ ?start-date ?end-date ?username
@@ -103,7 +108,7 @@
                       (str (gensym "time-"))
                       (:id time))]
   {:db/id id
-   :workout.time/time (:time time)}))
+   :workout.time/time (float (:time time))}))
 
 (defn insert-set [set]
   (println "inserting set " set)
@@ -117,14 +122,16 @@
 
 (defn insert-workout-exercise [exercise template-id]
   (println "inserting exercise " exercise)
-  (println "template-id " template-id)
-  (println "should look like {id: (id?) :sets [{id: (id?) :weight 100 :reps 10}]}")
   (let [id (if (nil? (:id exercise)) 
                       (str (gensym "completed-exercise-"))
                       (:id exercise))
-        sets (mapv insert-set (:sets exercise))]
+        insert-fn (case (keyword (get-in exercise [:exercise :tracking-type :ident]))
+          :workout.exercise/time insert-time
+          :workout.exercise/weightxreps insert-set)
+        sets (mapv insert-fn (:sets exercise))]
+    (println "sezn " sets)
   [{:db/id id
-   :workout.completed-exercise/exercise [:workout.exercise/unique-key [(:name exercise) template-id]]
+   :workout.completed-exercise/exercise (get-in exercise [:exercise :id])
    :workout.completed-exercise/sets (mapv :db/id sets)} sets]))
 
 (defn upsert-workout [workout username]
@@ -132,17 +139,26 @@
   (println "should look like {:exercises [...]}")
   (println "template-id ")
   (let [conn (get-conn)
-        [exercises sets] (mapv #(insert-workout-exercise % (:template-id workout)) (:exercises workout))
+        workout-id (if (nil? (:id workout)) 
+                      (str (gensym "workout-"))
+                      (:id workout))
+        inserted (mapv #(insert-workout-exercise % (:template workout)) (:exercises workout))
+        sets (mapcat second inserted)
+        exercises (mapv first inserted)
         exercise-ids (mapv :db/id exercises)]
     (println "exporce " exercises)
     (println "sez " sets)
-    
+    (println username)
+    (println workout)
+
     (d/transact conn {:tx-data (concat 
       sets
       exercises
-      [{:workout/exercises exercise-ids
+      [{:db/id workout-id
+        :workout/exercises exercise-ids
         :workout/user [:user/username username]
-        :workout/template (:template-id workout)}])})))
+        :workout/template (:template workout)
+        :workout/timestamp (:timestamp workout)}])})))
 
 (defn get-template-full [id username]
   (let [conn (get-conn)

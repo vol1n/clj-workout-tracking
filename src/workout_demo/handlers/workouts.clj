@@ -43,28 +43,56 @@
 (defn fetch-days-workouts [day month year username]
     (let [adjusted-month (+ month 1)
           start-date (start-of-day day adjusted-month year)
-          end-date (jt/plus start-date (jt/days 1))]
-        (mapv first (get-workouts-between-with-detail (jt/java-date start-date) (jt/java-date end-date) username))))
+          end-date (jt/plus start-date (jt/days 1))
+          result (mapv first (get-workouts-between-with-detail (jt/java-date start-date) (jt/java-date end-date) username))]
+      (println "result " result)
+      result))
 
 (s/def ::id int?)
-(s/def ::time float?)
+(s/def ::time number?)
 (s/def ::weight int?)
 (s/def ::reps int?)
 (s/def ::time-entry (s/keys :req-un [::time] :opt [::id]))
 (s/def ::set (s/keys :req-un [::weight ::reps] :opt [::id]))
 (s/def ::sets
-  (s/or :set-collection (s/coll-of ::set :kind vector?)
-        :time-collection (s/coll-of ::time-entry :kind vector?)))
-(s/def ::template-id int?)
+  (s/and
+   vector?
+   (fn [sets]
+    (println "sets " sets)
+    (println (map #(s/explain-data ::time-entry %) sets))
+     (if (empty? sets)
+       true
+       (let [first-set (first sets)]
+         (cond
+           ;; If the first set has :time but not :weight or :reps, it's a time-collection
+           (and (contains? first-set :time)
+                (not (contains? first-set :weight))
+                (not (contains? first-set :reps)))
+           (every? #(s/valid? ::time-entry %) sets)
+
+           ;; If the first set has :weight and :reps, it's a set-collection
+           (and (contains? first-set :weight)
+                (contains? first-set :reps))
+           (every? #(s/valid? ::set %) sets)
+
+           ;; If we can't determine the type, fail validation
+           :else false))))))
+(s/def ::template int?)
 (s/def ::timestamp inst?)
-(s/def ::exercise (s/keys :req-un [::name ::sets] :opt [::id]))
+(s/def ::exercise (s/keys :req-un [::id ::sets] :opt []))
 (s/def ::exercises (s/coll-of ::exercise :kind vector?))
-(s/def ::workout (s/keys :req-un [::exercises ::template-id ::timestamp] :opt [::id]))
+(s/def ::workout (s/keys :req-un [::exercises ::template] :opt [::id ::timestamp]))
+
+
+
+
 
 (defn log-workout [workout username]
   (println "koksdal " workout)
-  (let [parsed-workout (assoc workout :timestamp (jt/instant (:timestamp workout)))]
-    (println "workoot " parsed-workout)
+  (when (:template workout)
+    
+  (let [parsed-workout (assoc workout :timestamp (jt/java-date (jt/instant (:timestamp workout))))]
+    (println parsed-workout)
     (println (s/explain-data ::workout parsed-workout))
     (assert (s/valid? ::workout parsed-workout))
-    (upsert-workout parsed-workout username)))
+    (upsert-workout parsed-workout username))))
