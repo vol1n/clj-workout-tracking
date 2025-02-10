@@ -21,11 +21,12 @@ container_id=$(docker run -d \
   --static \
   --features=clj_easy.graal_build_time.InitClojureClasses \
   -jar /workspace/.holy-lambda/build/output.jar \
+  --trace-class-initialization='com.datomic.api.sync__init' \
   -H:Name=lambda-binary \
   -H:ReflectionConfigurationFiles=/workspace/resources/native-image/reflection-config.json \
   -H:ResourceConfigurationFiles=/workspace/resources/native-image/resource-config.json \
   -H:DynamicProxyConfigurationFiles=/workspace/resources/native-image/proxy-config.json \
-  --initialize-at-build-time=org.slf4j.LoggerFactory,ch.qos.logback,org.slf4j.simple.SimpleLogger \
+  --initialize-at-build-time=org.slf4j.LoggerFactory,ch.qos.logback,org.slf4j.simple.SimpleLogger,org. \
   --initialize-at-run-time=io.netty \
   --no-fallback \
   --verbose")
