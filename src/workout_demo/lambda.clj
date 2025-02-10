@@ -5,7 +5,8 @@
               [workout-demo.routes :refer [app]]
               [fierycod.holy-lambda.custom-runtime :as hl-runtime]
               [fierycod.holy-lambda.agent :as hl-agent]
-              [workout-demo.config :refer [get-config]]))
+              [workout-demo.config :refer [get-config]]
+              [datomic.client.api.sync]))
 
 (defn api-gw->ring [event]
   (let [headers (get event "headers" {})

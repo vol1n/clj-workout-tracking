@@ -39,10 +39,7 @@
   :plugins [[lein-figwheel "0.5.20"]
             [lein-shadow "0.4.0"]]
   :source-paths ["src", "src_cljs"]
-  :aot [workout-demo.lambda
-        datomic.client.api
-                           datomic.client.api.sync
-                           datomic.client.api.impl]
+  :aot [workout-demo.lambda]
   :clean-targets ^{:protect false} ["resources/public/js" "target"] 
   :profiles {:dev {:main workout-demo.core}
              :uberjar {:aot [workout-demo.lambda]
