@@ -27,7 +27,6 @@ container_id=$(docker run -d \
   -H:DynamicProxyConfigurationFiles=/workspace/resources/native-image/proxy-config.json \
   --initialize-at-build-time=org.slf4j.LoggerFactory,ch.qos.logback,org.slf4j.simple.SimpleLogger \
   --initialize-at-run-time=io.netty \
-  --initialize-at-run-time=datomic.client.api.sync__init \
   --no-fallback \
   --verbose")
 
