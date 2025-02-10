@@ -1,7 +1,8 @@
 (ns workout-demo.db.schema
   (:require [workout-demo.db.seeder :refer [generate-workout-days]]
             [workout-demo.config :refer [get-config]]
-            [datomic.client.api :as d])) 
+            [datomic.client.api :as d]
+            [datomic.client.api.sync :as dsync])) 
 
 ;; Load config
 (def config (delay (get-config)))
