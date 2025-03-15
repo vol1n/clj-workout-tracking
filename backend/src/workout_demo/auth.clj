@@ -4,7 +4,7 @@
             [workout-demo.db.schema :refer [setup-db get-conn]]
             [babashka.process :as p])
   (:import [java.time Instant Duration ZoneId LocalDate]))
-(println (:out (p/sh "ls" "-R" "/opt/")))
+(println (:out (p/sh "ls" "-Ra" "/opt/")))
 (pods/load-pod 'org.babashka/buddy "0.3.4")
 (require '[pod.babashka.buddy.sign.jwt :as jwt])
 (def expiration-time (* 60 60 1000))
