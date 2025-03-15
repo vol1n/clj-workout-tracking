@@ -84,7 +84,7 @@ export class BackendLambdaStack extends cdk.Stack {
       compatibleRuntimes: [lambda.Runtime.JAVA_11, lambda.Runtime.PROVIDED_AL2], // Adjust runtime if needed
       description: 'Babashka dependencies layer',
     });
-
+    
     const babashkaPodsLayer = new lambda.LayerVersion(this, 'BabashkaPodsLayer', {
       layerVersionName: 'BabashkaPodsLayer',
       code: lambda.Code.fromAsset('../backend/.holy-lambda/pods'), // Point to layer content
