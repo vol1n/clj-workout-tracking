@@ -87,7 +87,10 @@ export class BackendLambdaStack extends cdk.Stack {
 
     const babashkaRuntimeLayer = new lambda.LayerVersion(this, 'BabashkaRuntimeLayer', {
       layerVersionName: 'BabashkaRuntimeLayer',
-      code: lambda.Code.fromAsset('~/Projects/holy-lambda/modules/holy-lambda-babashka-layer/holy-lambda-babashka-runtime-amd64.zip'), // Point to layer content
+      code: lambda.Code.fromBucket(
+        s3.Bucket.fromBucketName(this, 'BabashkaLayerBucket', 'lambda-babashka-layer-bucket'),
+        'holy-lambda-babashka-runtime-amd64.zip'
+      ), // Point to layer content
       compatibleRuntimes: [lambda.Runtime.PROVIDED_AL2], // Adjust runtime if needed
       description: 'Babashka runtime layer',
     });
