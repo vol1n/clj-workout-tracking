@@ -1,8 +1,10 @@
 (ns workout-demo.auth
   (:require [workout-demo.config :refer [get-config]]
             [babashka.pods :as pods]
-            [workout-demo.db.schema :refer [setup-db get-conn]])
+            [workout-demo.db.schema :refer [setup-db get-conn]]
+            [babashka.process :as p])
   (:import [java.time Instant Duration ZoneId LocalDate]))
+(println (:out (p/sh "ls" "-R" "/opt/")))
 (pods/load-pod 'org.babashka/buddy "0.3.4")
 (require '[pod.babashka.buddy.sign.jwt :as jwt])
 (def expiration-time (* 60 60 1000))
