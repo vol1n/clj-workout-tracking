@@ -2,7 +2,7 @@
  :deps {io.github.FieryCod/holy-lambda-babashka-tasks
         {:git/url   "https://github.com/FieryCod/holy-lambda"
          :deps/root "./modules/holy-lambda-babashka-tasks"
-         :sha       "e6c47274a2bfc7576a9da0ccdbc079c1e83bee17"}
+         :sha       "bcecb506beae43ccec6964645d37457bed4eb95f"}
         io.github.FieryCod/holy-lambda {:mvn/version "0.6.2"}
         io.github.FieryCod/holy-lambda-ring-adapter {:mvn/version "0.1.2"}
         org.clojure/clojure {:mvn/version "1.11.1"}
@@ -49,10 +49,9 @@
                                ;; Used when either :docker is nil or
                                ;; `HL_NO_DOCKER` environment variable is set to "true"
                                ;; Might be set via `GRAALVM_HOME` environment variable
-                               :graalvm-home        "~/.graalvm"}
+                               :graalvm-home        "~/.graalvm"
 
-                       :backend
-                       {
+                       :backend {
 
                         ;; Babashka pods should be shipped using AWS Lambda Layer
                         ;; Check this template https://github.com/aws-samples/aws-lambda-layers-aws-sam-examples/blob/master/aws-sdk-layer/template.yaml
@@ -61,7 +60,7 @@
                         ;; For now pods should be declared in `bb.edn`. See: https://github.com/babashka/babashka/issues/768#issuecomment-825016317
                         ;;
                         ;; `IMPORTANT:` 3rd party babashka compatible libraries should be distributed as a layers (CodeUri: .holy-lambda/bb-clj-deps)
-                        :pods                      {'org.babashka/buddy "0.3.4"}
+                        :pods                      { org.babashka/buddy "0.3.4" }
 
                         ;; For `:native` runtime you can provide your own bootstrap file
                         :bootstrap-file            "bootstrap"
@@ -78,7 +77,7 @@
                                                     "--report-unsupported-elements-at-runtime"
                                                     "-H:+AllowIncompleteClasspath"
                                                     "--no-server"
-                                                    "--initialize-at-build-time=com.fasterxml.jackson"]}
+                                                    "--initialize-at-build-time=com.fasterxml.jackson"]}}
 
  :tasks {:requires            ([holy-lambda.tasks]) 
          hl:docker:run        holy-lambda.tasks/hl:docker:run
@@ -92,4 +91,5 @@
          hl:compile           holy-lambda.tasks/hl:compile
          hl:doctor            holy-lambda.tasks/hl:doctor
          hl:clean             holy-lambda.tasks/hl:clean
-         hl:version           holy-lambda.tasks/hl:version}}
+         hl:version           holy-lambda.tasks/hl:version
+         }}
