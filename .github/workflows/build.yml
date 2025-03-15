@@ -125,7 +125,7 @@ jobs:
         run: |
           cd backend
           bb hl:babashka:sync
-          bb -Duser.home=backend/.holy-lambda -e "(require '[babashka.pods :as pods]) (pods/load-pod 'org.babashka/buddy \"0.3.4\")"
+          bb -Duser.home=.holy-lambda -e "(require '[babashka.pods :as pods]) (pods/load-pod 'org.babashka/buddy \"0.3.4\")"
           ls -Ra .holy-lambda/
           cd ..
 
