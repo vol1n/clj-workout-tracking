@@ -6,7 +6,8 @@
         io.github.FieryCod/holy-lambda {:mvn/version "0.6.2"}
         org.clojure/clojure {:mvn/version "1.11.1"}
         cheshire/cheshire {:mvn/version "5.11.0"}
-        vol1n.dynalog/vol1n.dynalog {:local/root "/Users/colinryan/Projects/dynalog"} ;{:git/url "https://github.com/vol1n/dynalog" :git/sha "27ba5252a2bc66da696e526164a40f9f7eb32b39"}
+        vol1n.dynalog/vol1n.dynalog {:git/url "https://github.com/vol1n/dynalog" :git/sha "7fbe561e7f84b2bb70a329162149aa4f01759f9c"}
+                ;vol1n.dynalog/vol1n.dynalog {:local/root "/Users/colinryan/Projects/dynalog"} ;
         com.cognitect.aws/endpoints {:mvn/version "1.1.12.504"}
         com.cognitect.aws/ssm {:mvn/version "871.2.30.11"}
         com.cognitect.aws/dynamodb {:mvn/version "848.2.1413.0"}
