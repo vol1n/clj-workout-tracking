@@ -97,7 +97,8 @@ export class BackendLambdaStack extends cdk.Stack {
       handler: 'workout-demo.lambda.HttpApiProxyGateway',
       layers: [importedLayer, babashkaDepsLayer], // Attach both layers
       environment: {
-        CONFIG_PARAM_NAME: 'my-app-config'
+        CONFIG_PARAM_NAME: 'my-app-config',
+        HL_ENTRYPOINT: "workout-demo.lambda"
       }
     });
 
