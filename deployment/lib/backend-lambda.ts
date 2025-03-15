@@ -85,6 +85,13 @@ export class BackendLambdaStack extends cdk.Stack {
       description: 'Babashka dependencies layer',
     });
 
+    const babashkaPodsLayer = new lambda.LayerVersion(this, 'BabashkaPodsLayer', {
+      layerVersionName: 'BabashkaPodsLayer',
+      code: lambda.Code.fromAsset('../backend/.holy-lambda/pods'), // Point to layer content
+      compatibleRuntimes: [lambda.Runtime.JAVA_11, lambda.Runtime.PROVIDED_AL2], // Adjust runtime if needed
+      description: 'Babashka pods layer',
+    });
+
     const babashkaRuntimeLayer = new lambda.LayerVersion(this, 'BabashkaRuntimeLayer', {
       layerVersionName: 'BabashkaRuntimeLayer',
       code: lambda.Code.fromBucket(
@@ -103,9 +110,9 @@ export class BackendLambdaStack extends cdk.Stack {
     const bbLambda = new lambda.Function(this, 'WorkoutDemoBabashkaLambda', {
       functionName: 'WorkoutDemoBabashkaLambda',
       runtime: lambda.Runtime.PROVIDED_AL2,
-      code: lambda.Code.fromAsset('../backend/src'), // Your Lambda code location
+      code: lambda.Code.fromAsset('../backend/src'), 
       handler: 'workout-demo.lambda.HttpApiProxyGateway',
-      layers: [babashkaRuntimeLayer, babashkaDepsLayer], // Attach both layers
+      layers: [babashkaRuntimeLayer, babashkaPodsLayer, babashkaDepsLayer], // Attach all three layers
       environment: {
         CONFIG_PARAM_NAME: 'my-app-config',
         HL_ENTRYPOINT: "workout-demo.lambda"
