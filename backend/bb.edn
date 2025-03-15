@@ -3,7 +3,7 @@
         {:git/url   "https://github.com/FieryCod/holy-lambda"
          :deps/root "./modules/holy-lambda-babashka-tasks"
          :sha       "bcecb506beae43ccec6964645d37457bed4eb95f"}
-        io.github.FieryCod/holy-lambda {:mvn/version "0.6.2"}
+        io.github.FieryCod/holy-lambda {:mvn/version "0.6.6"}
         io.github.FieryCod/holy-lambda-ring-adapter {:mvn/version "0.1.2"}
         org.clojure/clojure {:mvn/version "1.11.1"}
         cheshire/cheshire {:mvn/version "5.11.0"}
