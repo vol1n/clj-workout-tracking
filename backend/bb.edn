@@ -60,7 +60,7 @@
                         ;; For now pods should be declared in `bb.edn`. See: https://github.com/babashka/babashka/issues/768#issuecomment-825016317
                         ;;
                         ;; `IMPORTANT:` 3rd party babashka compatible libraries should be distributed as a layers (CodeUri: .holy-lambda/bb-clj-deps)
-                        :pods                      { org.babashka/buddy "0.3.4" }
+                        :pods                      {}
 
                         ;; For `:native` runtime you can provide your own bootstrap file
                         :bootstrap-file            "bootstrap"
