@@ -84,7 +84,7 @@ export class BackendLambdaStack extends cdk.Stack {
       compatibleRuntimes: [lambda.Runtime.JAVA_11, lambda.Runtime.PROVIDED_AL2], // Adjust runtime if needed
       description: 'Babashka dependencies layer',
     });
-    
+
     const babashkaPodsLayer = new lambda.LayerVersion(this, 'BabashkaPodsLayer', {
       layerVersionName: 'BabashkaPodsLayer',
       code: lambda.Code.fromAsset('../backend/.holy-lambda/pods'), // Point to layer content
@@ -139,6 +139,11 @@ export class BackendLambdaStack extends cdk.Stack {
       description: 'The Invoke URL of the API Gateway',
       exportName: 'ApiGatewayInvokeUrl'
     });
+
+    new cdk.CfnOutput(this, "Layer", {
+      value: babashkaPodsLayer.layerVersionArn,
+      description: 'The ARN of the Babashka pods layer',
+  })
 
     new cdk.CfnOutput(this, 'LambdaFunctionName', {
       value: bbLambda.functionName,
