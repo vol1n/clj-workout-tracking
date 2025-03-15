@@ -4,6 +4,7 @@
          :deps/root "./modules/holy-lambda-babashka-tasks"
          :sha       "e6c47274a2bfc7576a9da0ccdbc079c1e83bee17"}
         io.github.FieryCod/holy-lambda {:mvn/version "0.6.2"}
+        io.github.FieryCod/holy-lambda-ring-adapter {:mvn/version "0.1.2"}
         org.clojure/clojure {:mvn/version "1.11.1"}
         cheshire/cheshire {:mvn/version "5.11.0"}
         vol1n.dynalog/vol1n.dynalog {:git/url "https://github.com/vol1n/dynalog" :git/sha "7fbe561e7f84b2bb70a329162149aa4f01759f9c"}
