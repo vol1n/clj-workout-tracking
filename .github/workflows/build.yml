@@ -122,7 +122,9 @@ jobs:
         run: npm install -g aws-cdk
 
       - name: Sync Dependencies
-        run: cd backend && bb hl:babashka:sync && cd ..
+        run: |
+          cd backend && bb hl:babashka:sync && cd ..
+          ls -Ra backend/.holy-lambda/pods
 
       - name: Deploy Backend
         run: |
