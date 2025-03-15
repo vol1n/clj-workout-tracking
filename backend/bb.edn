@@ -40,7 +40,7 @@
                                 :platform           "linux/amd64"
                                 ;; GraalVM Community holy-lambda compatible docker image
                                 ;; You can always build your own GraalVM image with enterprise edition
-                                :image              "graalvm-lambda-builder-jdk21"}
+                                :image              "ghcr.io/fierycod/holy-lambda-builder:amd64-java11-21.3.0"};;"graalvm-lambda-builder-jdk21"}
 
                        :build {:compile-cmd         "./hl-custom-compile.sh"}
 
@@ -79,7 +79,6 @@
                                                     "--initialize-at-build-time=com.fasterxml.jackson"]}
 
  :tasks {:requires            ([holy-lambda.tasks]) 
-         backend:run          (clojure "-m workout-demo.core")
          hl:docker:run        holy-lambda.tasks/hl:docker:run
          hl:native:conf       holy-lambda.tasks/hl:native:conf
          hl:native:executable (do
