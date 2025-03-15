@@ -122,7 +122,7 @@ jobs:
         run: npm install -g aws-cdk
 
       - name: Sync Dependencies
-        run: bb hl:babashka:sync
+        run: cd backend && bb hl:babashka:sync && cd ..
 
       - name: Deploy Backend
         run: |
