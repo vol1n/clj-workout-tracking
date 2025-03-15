@@ -1,11 +1,11 @@
 (ns workout-demo.lambda
     (:gen-class)
     (:require [fierycod.holy-lambda-ring-adapter.core :as hlra]
-              [fierycod.holy-lambda.core :as h]
               [workout-demo.routes :refer [app]]
               [fierycod.holy-lambda.custom-runtime :as hl-runtime]
               [fierycod.holy-lambda.agent :as hl-agent]
-              [workout-demo.config :refer [get-config]]))
+              [workout-demo.config :refer [get-config]]
+              [clojure.string]))
 
 (defn api-gw->ring [event]
   (let [headers (get event "headers" {})

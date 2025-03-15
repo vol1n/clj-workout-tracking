@@ -12,7 +12,7 @@
     "css:watch": "npx @tailwindcss/cli -i resources/public/css/main.css -o resources/public/dist/styles.css --watch",
     "css:build": "npx @tailwindcss/cli -i resources/public/css/main.css -o resources/public/dist/styles.css",
     "dev:front": "lein shadow watch app",
-    "dev:back": "lein run -m workout-demo.core",
+    "dev:back": "cd backend && lein run -m workout-demo.core",
     "build": "lein shadow release app"
   },
   "keywords": [],

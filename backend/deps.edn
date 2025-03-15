@@ -1,0 +1,32 @@
+{:paths ["src" "resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        ring/ring-defaults {:mvn/version "0.3.3"}
+        compojure {:mvn/version "1.6.2"}
+        ring/ring-jetty-adapter {:mvn/version "1.9.5"}
+        ring/ring-json {:mvn/version "0.5.1"}
+        clojure.java-time {:mvn/version "1.4.3"}
+        cheshire {:mvn/version "5.11.0"}
+        ring-cors {:mvn/version "0.1.13"}
+        aero {:mvn/version "1.1.6"}
+        com.auth0/java-jwt {:mvn/version "4.5.0"}
+        io.github.FieryCod/holy-lambda {:mvn/version "0.6.7"}
+        io.github.FieryCod/holy-lambda-ring-adapter {:mvn/version "0.1.2"}
+        com.datomic/client-cloud {:mvn/version "1.0.130"}
+        com.datomic/local {:mvn/version "1.0.285"}
+        software.amazon.awssdk/ssm {:mvn/version "2.30.16"}
+        software.amazon.awssdk/kms {:mvn/version "2.30.16"}
+        com.github.clj-easy/graal-build-time {:mvn/version "1.0.5"}
+        org.apache.httpcomponents/httpclient {:mvn/version "4.5.13"}
+        ch.qos.logback/logback-classic {:mvn/version "1.4.11"}
+        ch.qos.logback/logback-core {:mvn/version "1.4.11"}
+        com.fasterxml.jackson.core/jackson-core {:mvn/version "2.18.2"}
+        com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.18.2"}
+        com.fasterxml.jackson.core/jackson-annotations {:mvn/version "2.18.2"}}
+
+ :aliases
+ {:dev {:extra-paths ["test"]
+        :extra-deps {cider/cider-nrepl {:mvn/version "0.30.0"}
+                     refactor-nrepl/refactor-nrepl {:mvn/version "3.9.0"}}}
+  :uberjar {:extra-deps {seancorfield/depstar {:mvn/version "2.1.303"}}
+            :main-opts ["-m" "hf.depstar.uberjar" "backend.jar"]}
+  :lambda {:main-opts ["-m" "workout-demo.lambda"]}}}

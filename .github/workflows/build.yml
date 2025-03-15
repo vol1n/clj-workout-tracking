@@ -19,8 +19,8 @@ jobs:
       CDK_FRONTEND_STACK_NAME: FrontendCloudfrontStack
       DOCKER_TAG: latest
     steps:
-      - name: Install bb
-        run: bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
+      # - name: Install bb
+      #   run: bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -41,17 +41,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Prepare java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '8'
+      # - name: Prepare java
+      #   uses: actions/setup-java@v3
+      #   with:
+      #     distribution: 'zulu'
+      #     java-version: '8'
+
+      - name: install babshka
+        run: bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
 
       - name: Set up Clojure
         uses: DeLaGuardo/setup-clojure@13.0
         with:
           cli: latest
           lein: latest
+
+      - name: Install Frontend Dependencies && cd ..
+        run: cd frontend && lein deps && cd ..
 
       - name: Cache Dependencies
         uses: actions/cache@v3
@@ -61,16 +67,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-
 
-      - name: Install Dependencies
-        run: lein deps
-        
-      - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+ 
 
-      - name: Pull Prebuilt GraalVM Build Environment
-        run: |
-          docker pull ghcr.io/vol1n/graalvm-lambda-builder-jdk21:latest
-          docker tag ghcr.io/vol1n/graalvm-lambda-builder-jdk21:latest graalvm-lambda-builder-jdk21
+      # - name: Login to Amazon ECR
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v1
+
+      # - name: Build container and push to ECR
+      #   run: |
+      #     lein uberjar
+      #     docker build -t $ECR_REPO:$DOCKER_TAG .
+      #     docker push $ECR_REPO:$DOCKER_TAG
+        
+      # - name: Log in to GHCR
+      #   run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+
+      # - name: Pull Prebuilt GraalVM Build Environment
+      #   run: |
+      #     docker pull ghcr.io/vol1n/graalvm-lambda-builder-jdk21:latest
+      #     docker tag ghcr.io/vol1n/graalvm-lambda-builder-jdk21:latest graalvm-lambda-builder-jdk21
 
       # - name: HL BB stuff
       #   run: |
@@ -78,21 +93,22 @@ jobs:
       #     bb hl:native:conf || ls -lah .holy-lambda/build/ && pwd && java -jar .holy-lambda/build/output-agent.jar && exit 1
       #     bb hl:native:executable
 
-      - name: Build native binary
-        run: ./build-native.sh
+      # - name: Build native binary
+      #   run: |
+      #     ./build-native.sh
 
-      - name: Zip native binary
-        run: |
-          mv .holy-lambda/build/lambda-binary .holy-lambda/build/bootstrap
-          mkdir -p .holy-lambda/deploy
-          cd .holy-lambda/build
-          zip lambda-native.zip bootstrap
-          cd ../..
-          mv .holy-lambda/build/lambda-native.zip .holy-lambda/deploy
+      # - name: Zip native binary
+      #   run: |
+      #     mv .holy-lambda/build/lambda-binary .holy-lambda/build/bootstrap
+      #     mkdir -p .holy-lambda/deploy
+      #     cd .holy-lambda/build
+      #     zip lambda-native.zip bootstrap
+      #     cd ../..
+      #     mv .holy-lambda/build/lambda-native.zip .holy-lambda/deploy
 
-      - name: 📤 Upload ZIP to S3
-        run: |
-          aws s3 cp .holy-lambda/deploy/lambda-native.zip s3://workout-demo-lambda-bucket/lambda-native-${GITHUB_SHA}.zip
+      # - name: 📤 Upload ZIP to S3
+      #   run: |
+      #     aws s3 cp .holy-lambda/deploy/lambda-native.zip s3://workout-demo-lambda-bucket/lambda-native-${GITHUB_SHA}.zip
 
       - name: Install Node.js & AWS CDK
         uses: actions/setup-node@v4
@@ -102,11 +118,14 @@ jobs:
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
+      - name: Sync Dependencies
+        run: bb hl:babashka:sync
+
       - name: Deploy Backend
         run: |
           cd deployment
           npm install
-          cdk deploy ${CDK_BACKEND_STACK_NAME} --require-approval never --parameters LatestZip=lambda-native-${{ github.sha }}.zip
+          cdk deploy ${CDK_BACKEND_STACK_NAME} --require-approval never --parameters DockerTag=${DOCKER_TAG}
           cd ..
 
       - name: Get API Gateway URL
