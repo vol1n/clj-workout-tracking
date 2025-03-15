@@ -60,7 +60,7 @@ jobs:
           lein: latest
 
       - name: Install Frontend Dependencies && cd ..
-        run: cd frontend && lein deps && cd ..
+        run: cd frontend && lein deps && npm i && cd ..
 
       - name: Cache Dependencies
         uses: actions/cache@v3
