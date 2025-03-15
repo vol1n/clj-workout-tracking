@@ -85,9 +85,16 @@ export class BackendLambdaStack extends cdk.Stack {
       description: 'Babashka dependencies layer',
     });
 
+    const babashkaRuntimeLayer = new lambda.LayerVersion(this, 'BabashkaRuntimeLayer', {
+      layerVersionName: 'BabashkaRuntimeLayer',
+      code: lambda.Code.fromAsset('~/Projects/holy-lambda/modules/holy-lambda-babashka-layer/holy-lambda-babashka-runtime-amd64.zip'), // Point to layer content
+      compatibleRuntimes: [lambda.Runtime.PROVIDED_AL2], // Adjust runtime if needed
+      description: 'Babashka runtime layer',
+    });
+
     // 🔹 Import an existing Lambda Layer by ARN (Replace with actual ARN)
-    const existingLayerArn = 'arn:aws:lambda:us-east-1:842875382465:layer:holy-lambda-babashka-runtime-amd64:1';
-    const importedLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'ImportedLayer', existingLayerArn);
+    // const existingLayerArn = 'arn:aws:lambda:us-east-1:842875382465:layer:holy-lambda-babashka-runtime-amd64:1';
+    // const importedLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'ImportedLayer', existingLayerArn);
 
     // 🔹 Create the Lambda function with the layers
     const bbLambda = new lambda.Function(this, 'WorkoutDemoBabashkaLambda', {
@@ -95,7 +102,7 @@ export class BackendLambdaStack extends cdk.Stack {
       runtime: lambda.Runtime.PROVIDED_AL2,
       code: lambda.Code.fromAsset('../backend/src'), // Your Lambda code location
       handler: 'workout-demo.lambda.HttpApiProxyGateway',
-      layers: [importedLayer, babashkaDepsLayer], // Attach both layers
+      layers: [babashkaRuntimeLayer, babashkaDepsLayer], // Attach both layers
       environment: {
         CONFIG_PARAM_NAME: 'my-app-config',
         HL_ENTRYPOINT: "workout-demo.lambda"
