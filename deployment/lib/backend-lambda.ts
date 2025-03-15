@@ -90,11 +90,11 @@ export class BackendLambdaStack extends cdk.Stack {
     const importedLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'ImportedLayer', existingLayerArn);
 
     // 🔹 Create the Lambda function with the layers
-    const bbLambda = new lambda.Function(this, 'ExampleLambdaFunction', {
-      functionName: 'ExampleLambdaFunction',
-      runtime: lambda.Runtime.JAVA_11, // Change if necessary
+    const bbLambda = new lambda.Function(this, 'WorkoutDemoBabashkaLambda', {
+      functionName: 'WorkoutDemoBabashkaLambda',
+      runtime: lambda.Runtime.PROVIDED_AL2,
       code: lambda.Code.fromAsset('../backend/src'), // Your Lambda code location
-      handler: 'com.company.example_lambda.core.ExampleLambda',
+      handler: 'workout-demo.lambda.HttpApiProxyGateway',
       layers: [importedLayer, babashkaDepsLayer], // Attach both layers
       environment: {
         CONFIG_PARAM_NAME: 'my-app-config'
