@@ -21,6 +21,7 @@
     (upsert-template parsed-template username)))
 
 (defn fetch-template [id username]
+  (println "im in fetch template")
     (let [template (get-template-full id username)]
         (println "templ4te " template)
         template))

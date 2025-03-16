@@ -26,7 +26,8 @@
                                    db)))
           missing-users (remove #(contains? existing-users (name %)) (keys (:users @config)))] 
       (when (seq missing-users)
-        (d/transact conn {:tx-data (mapv (fn [u] {:user/username (name u)}) missing-users)}))
+        (println "seeding users" (d/transact conn {:tx-data (mapv (fn [u] {:user/username (name u)}) missing-users)})))
+    (println missing-users)
     (println "done seeding users")))
 
 (def user-schema
@@ -243,8 +244,9 @@
 
 (defn seed-demo [conn]
   ;(clear-demo-data conn)
-  (d/clear-table! conn "workout-demo")
-  (d/transact conn {:tx-data (seed-templates)})
+  ;; (d/clear-table! conn "workout-demo")
+  ;; (setup-db conn)
+  ;; (d/transact conn {:tx-data (seed-templates)})
   (generate-workout-days conn))
 
 

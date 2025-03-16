@@ -62,7 +62,8 @@
                           flatten
                           instant-max
                           instant->local-date)
-        start-date (or (.plusDays last-workout-day 1) (LocalDate/of 2025 2 1))
+        inc-day-safe #(when % (.plusDays % 1))
+        start-date (or (inc-day-safe last-workout-day) (LocalDate/of 2025 2 1))
         date-seq (take-while #(.isBefore % today)
                              (iterate #(.plusDays % 1) start-date))
 
@@ -79,6 +80,7 @@
         upper-body-id (get templates "Upper Body")
         lower-body-id (get templates "Lower Body")
         run-id (get templates "800m Repeats")]
+    (println "fasf")
     (when demo-user-id
       (let [workout-txns
             (doall (for [date date-seq

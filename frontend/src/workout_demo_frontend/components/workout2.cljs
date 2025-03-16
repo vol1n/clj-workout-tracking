@@ -60,6 +60,7 @@
              :error-handler #(js/console.error "Failed to fetch summary" %)}))
 
 (defn update-templates! []
+  (swap! app-state (fn [prev] (assoc prev :templates :fetching)))
   (let [on-success #(swap! app-state (fn [prev] (assoc prev :templates %)))]
     (fetch-templates on-success)))
 
@@ -120,7 +121,8 @@
   (ratom/run! ;; Analagous to useEffect in React - except we don't need to specify deps - r/run returns nil whereas reaction returns something
    (let [selected-workout-id (:selected-workout @app-state)
          exercises (:exercises @form-state)
-         selected-workout (some #(when (= (:id %) selected-workout-id) %) (:todays-workouts @app-state))]
+         todays-workouts (if (= (:todays-workouts @app-state) :fetching) [] (:todays-workouts @app-state))
+         selected-workout (some #(when (= (:id %) selected-workout-id) %) todays-workouts)]
      (when (and selected-workout-id (= (count exercises) 0))
        (swap! form-state (fn [prev]
                            (let [initial (assoc prev :id (:id selected-workout) :template (get-in selected-workout [:template :id]) :exercises (:exercises selected-workout) :timestamp (:timestamp selected-workout))
@@ -150,7 +152,7 @@
 
 ;; State management
 (defn update-workouts! [day month year] ;; 
-  (println "updating workouts")
+  (swap! app-state (fn [prev] (assoc prev :todays-workouts :fetching)))
   (let [keywordize-tracking-type (fn [exercise]
                                    (let [after (update-in exercise [:exercise :tracking-type] keyword)]
                                      after))
@@ -218,7 +220,7 @@
 
 (defn select-template []
   (cond
-    (nil? (:templates @app-state)) [:p "Loading..."]
+    (or (nil? (:templates @app-state)) (= (:templates @app-state) :fetching )) [:p "Loading..."]
     :else [:div {:class "grid grid-cols-1 items-center gap-y-4 mt-6"}
            (for [[index template] (map-indexed vector (:templates @app-state))]
              ^{:key index}
@@ -247,7 +249,7 @@
       [x-sign]]
      (cond
        (:new-workout current-app-state) [select-template]
-       (nil? (:todays-workouts current-app-state)) [:p "Loading..."]
+       (or (nil? (:todays-workouts current-app-state)) (= (:todays-workouts current-app-state) :fetching)) [:p "Loading..."]
        :else (cond
                (= (count (:exercises current-form-state)) 0) [:div {:class "grid grid-cols-1 items-center gap-y-4 mt-6"}
                                                               (for [[index workout] (map-indexed vector (:todays-workouts current-app-state))]
