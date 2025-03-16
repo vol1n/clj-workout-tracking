@@ -37,7 +37,7 @@ export class BackendLambdaStack extends cdk.Stack {
         'LambdaExecutionPolicy': new iam.PolicyDocument({
           statements: [
             new iam.PolicyStatement({
-              actions: ['ssm:GetParameter'],
+              actions: ['ssm:GetParameter', 'kms:Decrypt'],
               resources: ['*'],
             }),
           ],
@@ -102,6 +102,7 @@ export class BackendLambdaStack extends cdk.Stack {
       description: 'Babashka runtime layer',
     });
 
+
     // 🔹 Import an existing Lambda Layer by ARN (Replace with actual ARN)
     // const existingLayerArn = 'arn:aws:lambda:us-east-1:842875382465:layer:holy-lambda-babashka-runtime-amd64:1';
     // const importedLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'ImportedLayer', existingLayerArn);
@@ -116,7 +117,8 @@ export class BackendLambdaStack extends cdk.Stack {
       environment: {
         CONFIG_PARAM_NAME: 'my-app-config',
         HL_ENTRYPOINT: "workout-demo.lambda"
-      }
+      },
+      role: lambdaRole
     });
 
 
