@@ -148,7 +148,6 @@
      (reset! last-saved-form-state @form-state) ;; Only trigger if form has data
      (schedule-save!))))
 
-
 ;; State management
 (defn update-workouts! [day month year] ;; 
   (println "updating workouts")

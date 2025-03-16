@@ -1,6 +1,6 @@
 (ns workout-demo.db.seeder
   (:require [vol1n.dynalog.api :as d])
-  (:import [java.time LocalDate ZonedDateTime ZoneId]))
+  (:import [java.time LocalDate ZonedDateTime ZoneId LocalDateTime]))
 
 (defn random-workout-type []
   (rand-nth [:upper-body :lower-body :run nil nil]))
@@ -42,17 +42,27 @@
              ))
          exercises)))
 
+(defn instant->local-date [instant]
+  (if (nil? instant)
+    nil
+    (LocalDate/ofInstant instant (ZoneId/of "UTC"))))
+
 
 (defn generate-workout-days [conn]
   (let [db (d/db conn)
         today (LocalDate/now)
-        last-workout (d/q '[:find ?w ?ts
+        instant-max #(when (seq %) 
+                     (apply max-key (fn [inst] (-> inst .toEpochMilli)) %))
+        last-workout-day (->> (d/q '[:find ?ts
                             :in $ ?username
                             :where [?w :workout/timestamp ?ts]
                                   [?w :workout/user ?user]
                                   [?user :user/username ?username]]
                           db "demo")
-        start-date (LocalDate/of 2025 2 1) 
+                          flatten
+                          instant-max
+                          instant->local-date)
+        start-date (or (.plusDays last-workout-day 1) (LocalDate/of 2025 2 1))
         date-seq (take-while #(.isBefore % today)
                              (iterate #(.plusDays % 1) start-date))
 

@@ -1,8 +1,7 @@
 (ns workout-demo-frontend.auth
     (:require [reagent.core :as r]
               [clojure.string :as str]
-              [workout-demo-frontend.config :refer [get-api-url]]
-              [cljs.pprint :refer [pprint]]))
+              [workout-demo-frontend.config :refer [get-api-url]]))
 
 (def logged-in? (r/atom nil))
 
@@ -37,16 +36,18 @@
 (defn api-call [method route opts]
   (let [token (get-token)
         headers (if token {"Authorization" (str "Bearer " token)} {})
-        user-error-handler (:error-handler opts)
+        user-error-handler #(println "request error" %)
         default-error-handler (fn [{:keys [status response]}]
                                 (if (= status 401)
                                   (do (js/console.warn "Unauthorized! Logging out.")
                                       (logout!))
                                   (when user-error-handler
                                     (user-error-handler {:status status :response response}))))
-        full-opts (merge (dissoc opts :error-handler) {:headers headers :error-handler default-error-handler} )
-        url (join-url (get-api-url) route)
+        wrapped-handler #(do (println "response" %) ((:handler opts) %))
+        full-opts (merge (dissoc opts :error-handler) {:headers headers :error-handler default-error-handler :handler wrapped-handler})
+        url (join-url (get-api-url) route) 
         response (method url full-opts)] ;; Call custom handler if exists 
+    (println ":opts" opts)
     response))
 
 (defn api-call-no-auth [method route opts]
