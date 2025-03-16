@@ -12,7 +12,6 @@
     kw))
 
 (defn clean-response [m]
-  (println "m " m)
   (cond
     (map? m) (into {} (map (fn [[k v]] [ (clean-keyword k) (clean-response v)]) m)) 
     (coll? m) (mapv clean-response m) 
@@ -34,8 +33,6 @@
   {[:post "/login"] (fn [request]
                       (let [body (:body request)
                             token (authenticate (:username body) (:password body))]
-                        (println "body" body)
-                        (println "TOKEN " token)
                         (if (nil? token)
                           (unauthorized-response)
                           (->
@@ -44,13 +41,9 @@
 
 (defn wrap-jwt-auth [handler]
   (fn [request]
-    (println "wrap-jwt-auth")
     (let [token-string (get-in request [:headers "authorization"])
         token (when token-string (second (re-find #"Bearer (.+)" token-string)))
         user  (when token (verify-jwt token))]
-      (println "token-string " token-string)
-      (println "toked " token)
-      (println user)
       (if user
         (handler (assoc request :user user))
         (unauthorized-response)))))
@@ -97,40 +90,29 @@
                                                :month (Integer/parseInt end-month)
                                                :year (Integer/parseInt end-year)} exercise))))})
 
-(defn wrap-logging [handler]
-  (fn [request]
-    (let [response (handler request)]
-      (println "=== HTTP RESPONSE ===")
-      (println response)  ;; Pretty-print response for debugging
-      response)))
-
 (defn wrap [routes]
   (-> 
     routes
     (util/wrap-params)
     (util/wrap-json-body)
     (util/wrap-json-response)
-    (util/wrap-cors)
-    (wrap-logging)))
+    (util/wrap-cors)))
 
 (defn match-route [req routes]
-  (println "match-route req " req)
   (let [route-key [(:request-method req) (:uri req)]]
-    (println "match-route route-key " route-key)
     (if-let [handler (get routes route-key)]
       (handler req)
       {:status 404 :body "Not Found"})))
 
 (def app-handler 
   (->
-   (fn [req] (println "app-hander") (match-route req app-routes))
+   (fn [req] (match-route req app-routes))
    (wrap)
    (wrap-jwt-auth)))
 
 (def auth-handler
   (->
    (fn [req] 
-     (println "auth-hander") 
      (match-route req auth-routes))
    (wrap)))
 

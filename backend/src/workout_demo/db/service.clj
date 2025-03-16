@@ -4,9 +4,6 @@
   (:import (java.time Instant)))
 
 (defn get-workouts-between [start-date end-date username]
-  (println "start-date " start-date)
-  (println "end-date " end-date)
-  (println "low taper fade " username)
   (let [conn (get-conn)]
     (d/q '[:find (pull ?workout [:db/id
                                  :workout/timestamp
@@ -26,7 +23,6 @@
          username)))
 
 (defn get-workouts-between-with-detail [start-date end-date username]
-  (println "get-workouts-between-with-detail" start-date end-date)
     (let [conn (get-conn)]
         (d/q '[:find (pull ?workout 
           [:db/id
@@ -74,22 +70,15 @@
         username)))
 
 (defn insert-exercise [exercise template-id]
-  (println "should look like {:ident :workout.exercise/:work-1 :name \"Bench Press\", :tracking-type :workout.exercise/weightxreps}")
-  (println "inserting exercise " exercise)
-  (println "template-id " template-id)
   (let [data {:workout.exercise/name (:name exercise)
               :workout.exercise/order (:order exercise)
    :workout.exercise/tracking-type (keyword (:tracking-type exercise))
    :workout.exercise/num-sets (:num-sets exercise)}]
-    (println "dataa " data)
-    (println (= template-id "template"))
     (if (nil? (:id exercise))
       (merge {:db/id (str (gensym "exercise-"))} data )
     (merge {:db/id (:id exercise)} data ))))
 
 (defn upsert-template [template username]
-  (println "inserting template " template)
-  (println "should look like {:id :timestamp {timestamp} :name \"Upper Body\" :exercises [{:name \"Bench Press\" :tracking-type :workout.exercise/weightxreps :num-sets 3}]}")
   (let [conn (get-conn)
         template-id (if (nil? (:id template)) 
                       "template"
@@ -101,14 +90,9 @@
                                 :workout.template/symbol (:symbol template)
                                 :workout.template/user [:user/username username]
                                 :workout.template/exercises exercise-ids}] )]
-    (println "exporce " exercises)
-    (println "ids " exercise-ids)
-    (println "tx-data " tx-data)
     (d/transact conn {:tx-data tx-data})))
 
 (defn insert-time [time]
-  (println "inserting time " time)
-  (println "should look like {:id (id?) :time 100.0}")
   (let [id (if (nil? (:id time)) 
                       (str (gensym "time-"))
                       (:id time))]
@@ -117,8 +101,6 @@
    :workout.set/order (:order time)}))
 
 (defn insert-set [set]
-  (println "inserting set " set)
-  (println "should look like {:id (id?) :weight 100 :reps 10}")
   (let [id (if (nil? (:id set)) 
                       (str (gensym "set-"))
                       (:id set))]
@@ -128,8 +110,6 @@
    :workout.set/order (:order set)}))
 
 (defn insert-workout-exercise [exercise template-id]
-  (println "inserting exercise " exercise)
-  (println "exercise " (:exercise exercise))
   (let [id (if (nil? (:id exercise)) 
                       (str (gensym "completed-exercise-"))
                       (:id exercise))
@@ -139,15 +119,11 @@
                     :weightxreps insert-set
                     :workout.exercise/weightxreps insert-set)
         sets (mapv insert-fn (:sets exercise))]
-    (println "sezn " sets)
   [{:db/id id
    :workout.completed-exercise/exercise (get-in exercise [:exercise :id])
    :workout.completed-exercise/sets (mapv :db/id sets)} sets]))
 
 (defn upsert-workout [workout username]
-  (println "inserting workout " workout)
-  (println "should look like {:exercises [...]}")
-  (println "template-id ") 
   (let [conn (get-conn)
         workout-id (if (nil? (:id workout)) 
                       (str (gensym "workout-"))
@@ -160,13 +136,8 @@
                  :workout/exercises exercise-ids
                  :workout/user [:user/username username]
                  :workout/template (:template workout)
-                 :workout/timestamp (:timestamp workout)}]
-    (println "exporce " exercises)
-    (println "sez " sets)
-    (println username)
-    (println workout)
-
-    (let [tx-result (d/transact conn {:tx-data (concat 
+                 :workout/timestamp (:timestamp workout)} 
+        tx-result (d/transact conn {:tx-data (concat 
       sets
       exercises
       [workout])})]
@@ -188,7 +159,7 @@
                                :workout.set/order
                                :workout.set/weight
                                :workout.set/reps
-                               :workout.time/time]}]}] (or (get (:tempids tx-result) workout-id) workout-id)))))
+                               :workout.time/time]}]}] (or (get (:tempids tx-result) workout-id) workout-id))))
 
 (defn get-template-full [id username]
   (let [conn (get-conn)

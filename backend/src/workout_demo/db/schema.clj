@@ -1,8 +1,7 @@
 (ns workout-demo.db.schema
   (:require [workout-demo.db.seeder :refer [generate-workout-days]]
             [workout-demo.config :refer [get-config]]
-            [vol1n.dynalog.api :as d])
-  (:import (java.time Instant))) 
+            [vol1n.dynalog.api :as d])) 
 
 (def config (delay (get-config)))
 
@@ -20,17 +19,13 @@
   @client)
 
 (defn seed-users [conn]
-  (let [db (d/db conn)]
-    (let [existing-users (set (map first (d/q '[:find ?username
+  (let [db (d/db conn)
+        existing-users (set (map first (d/q '[:find ?username
                                      :where [_ :user/username ?username]]
                                    db)))
           missing-users (remove #(contains? existing-users (name %)) (keys (:users @config)))]
-      (println "existing" existing-users)
-      (println "missing" missing-users)
       (when (seq missing-users)
-        (d/transact conn {:tx-data (mapv (fn [u] {:user/username (name u)}) missing-users)})
-        (println "Existing users:" (d/q '[:find ?username
-                                          :where [_ :user/username ?username]] db))))))
+        (d/transact conn {:tx-data (mapv (fn [u] {:user/username (name u)}) missing-users)}))))
 
 (def user-schema
   [{:db/ident :user/username
@@ -123,7 +118,6 @@
         demo-user-id (ffirst (d/q '[:find ?u 
                                     :where [?u :user/username "demo"]]
                                   db))]
-    (println "demo user id:" demo-user-id)
     (when demo-user-id
       (let [templates (d/q '[:find ?t
                              :in $ ?u
@@ -152,13 +146,10 @@
                                   (map first exercises)
                                   (map first completed-exercises)
                                   (map first sets))]
-          (println "entities-to-delete" entities-to-delete)
           (when (seq entities-to-delete)
-            (d/transact conn {:tx-data (mapv #(vector :db/retractEntity %) entities-to-delete)}))
-          (println "Cleared data for demo user.")))))
+            (d/transact conn {:tx-data (mapv #(vector :db/retractEntity %) entities-to-delete)}))))))
 
 (defn seed-templates []
-  (println "Seeding templates...")
   (let [;; Define temporary IDs for exercises
         bench-press-id "bench-press"
         pull-ups-id    "pull-ups"
@@ -221,73 +212,37 @@
                   :workout.template/name "800m Repeats"
                   :workout.template/exercises [run-800-id]
                   :workout.template/symbol "🏃‍♂️"}]]
+    (concat exercises templates)))
 
-        ;; workouts [{:db/id "workout-1-id"
-        ;;            :workout/user [:user/username "demo"]
-        ;;            :workout/template upper-body-template-id
-        ;;            :workout/timestamp #inst "2025-01-05T10:00:00.000Z"
-        ;;            :workout/exercises [completed-bench-press-id completed-pull-ups-id]}
-        ;;           {:db/id "workout-2-id"
-        ;;            :workout/user [:user/username "demo"]
-        ;;            :workout/template lower-body-template-id
-        ;;            :workout/timestamp #inst "2025-01-10T11:00:00.000Z"
-        ;;            :workout/exercises [completed-squats-id completed-lunges-id]}
-        ;;           {:db/id "workout-3-id"
-        ;;            :workout/user [:user/username "demo"]
-        ;;            :workout/template run-template-id
-        ;;            :workout/timestamp #inst "2025-01-15T12:00:00.000Z"
-        ;;            :workout/exercises [completed-run-800-id]}]]
-    (concat exercises templates))) ;;workouts 
+(defn setup-db [new-conn]
+  (d/transact new-conn {:tx-data user-schema}
+            (d/transact new-conn {:tx-data [{:db/ident :workout/type
+                                             :db/valueType :db.type/ref
+                                             :db/cardinality :db.cardinality/one
+                                             :db/doc "The type of the workout"}
+                                            {:db/ident :workout/exercises
+                                             :db/valueType :db.type/ref
+                                             :db/cardinality :db.cardinality/many
+                                             :db/doc "The exercises of the workout"}]}))
+   (d/transact new-conn {:tx-data exercise-schema})
+   (d/transact new-conn {:tx-data tracking-type-schema})
+   (d/transact new-conn {:tx-data tracking-types})
+   (d/transact new-conn {:tx-data template-schema})
+   (d/transact new-conn {:tx-data workout-schema})
+   (d/transact new-conn {:tx-data workout-completed-exercise-schema})
+   (d/transact new-conn {:tx-data workout-time-schema})
+   (d/transact new-conn {:tx-data workout-set-schema})
+   (seed-users new-conn))
 
-(defn setup-db 
-  ([new-conn] (setup-db new-conn true))
-  ([new-conn do-seed-demo?]
-   (println "do-seed-demo?" do-seed-demo?)
-    ;; Define schema for person and address 
-  (println "first transact")
-  (println {:tx-data user-schema})
-  (println "first transact" (d/transact new-conn {:tx-data user-schema}))
-  (println "second transact"
-           (d/transact new-conn {:tx-data [{:db/ident :workout/type
-                                            :db/valueType :db.type/ref
-                                            :db/cardinality :db.cardinality/one
-                                            :db/doc "The type of the workout"}
-                                           {:db/ident :workout/exercises
-                                            :db/valueType :db.type/ref
-                                            :db/cardinality :db.cardinality/many
-                                            :db/doc "The exercises of the workout"}]}))
-  (println "3rd transact")
-  (d/transact new-conn {:tx-data exercise-schema})
-  (println "4th transact")
-  (d/transact new-conn {:tx-data tracking-type-schema})
-  (println "5th transact")
-  (d/transact new-conn {:tx-data tracking-types})
-  (println "6th transact")
-  (d/transact new-conn {:tx-data template-schema})
-  (println "7th transact")
-  (d/transact new-conn {:tx-data workout-schema})
-  (println "8th transact")
-  (d/transact new-conn {:tx-data workout-completed-exercise-schema})
-  (println "9th transact")
-  (d/transact new-conn {:tx-data workout-time-schema})
-  (println "10th transact")
-  (d/transact new-conn {:tx-data workout-set-schema})
-  (seed-users new-conn)
-  (when do-seed-demo?
-    (println "clearing demo data")
-    (clear-demo-data new-conn)
-    (println "querying users")
-    (let [db (d/db new-conn)
+(defn seed-demo [conn]
+    (clear-demo-data conn)
+    (let [db (d/db conn)
           users (d/q '[:find ?username
                        :where
                        [?u :user/username ?username]]
-                     db)]
-      (println "Usernames in DB:" users))
-    (let [seed-templates-tx-data (seed-templates)]
-      (println "seed-templates-tx-data" seed-templates-tx-data)
-      (println "tx" (d/transact new-conn {:tx-data seed-templates-tx-data})))
-    (println "done seeding templates")
-    (generate-workout-days new-conn))))
+                     db)])
+    (seed-templates)
+    (generate-workout-days conn))
 
 
 ;; (defn ensure-db []

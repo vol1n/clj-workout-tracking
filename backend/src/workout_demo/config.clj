@@ -21,10 +21,6 @@
                                 :request {:Name param-name
                                           :WithDecryption true}})
           config-value (get-in response [:Parameter :Value])]
-      (println "param-name" param-name)
-      (println "response" response)
-      (println "config-value" config-value)
-
       (if (nil? config-value)
         (throw (ex-info "❌ CONFIG_PARAM_NAME not found in SSM" {}))
         (edn/read-string config-value)))))

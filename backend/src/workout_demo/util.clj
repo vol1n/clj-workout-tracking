@@ -5,9 +5,7 @@
 
 (defn url-decode
   [s]
-  (println "url-decoding" s)
   (let [decoded (URLDecoder/decode s "UTF-8")]
-    (println "decoded" decoded)
     decoded))
 
 (defn response
@@ -38,7 +36,6 @@
 (defn parse-query-params
   "Parses a query string into a Clojure map."
   [query-string]
-  (println "query-string" query-string)
   (when query-string
     (into {} (map #(let [[k v] (str/split % #"=")]
                      [k (url-decode v)])
@@ -48,9 +45,7 @@
   "Middleware to parse query params and add them to the request map."
   [handler]
   (fn [request] 
-    (println "wrap-params")
     (let [params (parse-query-params (:query-string request))]
-      (println "params" params)
       (handler (assoc request :query-params params)))))
 
 (defn parse-json-body
@@ -81,12 +76,10 @@
   "Middleware that adds CORS headers to the response."
   [handler] 
   (fn [request]
-    (println "in cors wrapper")
     (let [response (handler request)
           result (assoc response :headers
                         (merge (:headers response)
                                {"Access-Control-Allow-Origin"  "*"
                                 "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS"
                                 "Access-Control-Allow-Headers" "Content-Type, Authorization"}))]
-      (println "result" result)
       result)))
