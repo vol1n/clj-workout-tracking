@@ -118,7 +118,8 @@ export class BackendLambdaStack extends cdk.Stack {
         CONFIG_PARAM_NAME: '/workout-demo/config',
         HL_ENTRYPOINT: "workout-demo.lambda"
       },
-      role: lambdaRole
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(30)
     });
 
 
