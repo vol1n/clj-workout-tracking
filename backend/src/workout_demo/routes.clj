@@ -90,13 +90,20 @@
                                                :month (Integer/parseInt end-month)
                                                :year (Integer/parseInt end-year)} exercise))))})
 
+(defn wrap-logging [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (println (str request " -> " response))
+      response)))
+
 (defn wrap [routes]
   (-> 
     routes
     (util/wrap-params)
     (util/wrap-json-body)
     (util/wrap-json-response)
-    (util/wrap-cors)))
+    (util/wrap-cors)
+    (wrap-logging)))
 
 (defn match-route [req routes]
   (let [route-key [(:request-method req) (:uri req)]]

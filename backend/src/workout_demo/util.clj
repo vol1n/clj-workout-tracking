@@ -74,7 +74,7 @@
 
 (defn wrap-cors
   "Middleware that adds CORS headers to the response."
-  [handler] 
+  [handler]
   (fn [request]
     (let [response (handler request)
           result (assoc response :headers

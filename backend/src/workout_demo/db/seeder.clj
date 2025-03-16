@@ -44,13 +44,19 @@
 
 
 (defn generate-workout-days [conn]
-  (println "generate-workout-days")
   (let [db (d/db conn)
         today (LocalDate/now)
+        last-workout (d/q '[:find ?w ?ts
+                            :in $ ?username
+                            :where [?w :workout/timestamp ?ts]
+                                  [?w :workout/user ?user]
+                                  [?user :user/username ?username]]
+                          db "demo")
         start-date (LocalDate/of 2025 2 1) 
         date-seq (take-while #(.isBefore % today)
                              (iterate #(.plusDays % 1) start-date))
 
+        ;; Get demo user ID
         ;; Get demo user ID
         demo-user-id (ffirst (d/q '[:find ?u
                                     :where [?u :user/username "demo"]]
