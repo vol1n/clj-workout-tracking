@@ -43,8 +43,7 @@
                                       (logout!))
                                   (when user-error-handler
                                     (user-error-handler {:status status :response response}))))
-        wrapped-handler #(do (println "response" %) ((:handler opts) %))
-        full-opts (merge (dissoc opts :error-handler) {:headers headers :error-handler default-error-handler :handler wrapped-handler})
+        full-opts (merge (dissoc opts :error-handler) {:headers headers :error-handler default-error-handler})
         url (join-url (get-api-url) route) 
         response (method url full-opts)] ;; Call custom handler if exists 
     (println ":opts" opts)

@@ -216,7 +216,7 @@
 
 (defn get-exercises [username]
   (let [conn (get-conn)]
-    (d/q '[:find ?template ?name
+    (d/q '[:find ?name
            :in $ ?username
            :where
            [?template :workout.template/user ?user]

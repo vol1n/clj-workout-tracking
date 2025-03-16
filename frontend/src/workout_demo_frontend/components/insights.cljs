@@ -20,15 +20,9 @@
 
 (def exercise-to-data (r/atom {}))
 
-(defn fetch-exercises []
-    (let [data [
-        "Bench Press"
-        "800m Run"
-        "Pull-ups"
-        "Squats"
-        "Lunges"
-    ]]
-        data))
+(defn fetch-exercises [on-success]
+  (reset! exercise-options :fetching) 
+  (api-call GET "/exercises" {:handler on-success}))
 
 (defn date-offset [offset]
   (let [date (js/Date.)]
@@ -70,7 +64,7 @@
     (let [data @exercise-to-data
           exercise-data (get-in data [(keyword exercise-name) range])]
         (if (nil? exercise-data)
-                (fetch-graph-data exercise-name range #(do 
+                (fetch-graph-data exercise-name range #(do  
                     (swap! exercise-to-data (fn [prev] (assoc-in prev [(keyword exercise-name) range] (process-graph-data %))))
                     (swap! chart-data (fn [prev] (assoc prev :data (process-graph-data %))))))
         (swap! chart-data #(assoc-in % [:data :values] exercise-data)))))
@@ -112,7 +106,7 @@
 
 (defn insights []
     (when (nil? @exercise-options)
-        (reset! exercise-options (fetch-exercises)))
+        (fetch-exercises #(reset! exercise-options %)))
     (let [current-selected @selected-exercise
           current-options @exercise-options
           current-time-range @selected-time-range
@@ -121,11 +115,12 @@
             [:div {:class "mt-2"}]
             [:h2 {:class "text-lg font-bold mb-2"} "Insights"]
             [:div {:class "flex items-center gap-x-6"}
-            [:select {:on-change #(update-selected-exercise! (.-value (.-target %)))
-                      :value current-selected}
-                [:option {:value ""} "Select an exercise"]
-                (for [exercise current-options]
-                    [:option {:key exercise :value exercise} exercise])]
+             (when (not= current-options :fetching)
+                [:select {:on-change #(update-selected-exercise! (.-value (.-target %)))
+                          :value current-selected}
+                    [:option {:value ""} "Select an exercise"] 
+                    (for [[i exercise] (map-indexed vector current-options)]
+                        [:option {:key (str exercise i) :value exercise} exercise])])
             [:select {:on-change #(update-selected-time-range! (.-value (.-target %)))
                       :value current-time-range}
                 [:option {:value :2weeks} "Last 2 weeks"]

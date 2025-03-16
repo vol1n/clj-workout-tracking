@@ -3,7 +3,6 @@
               [workout-demo-frontend.auth :refer [api-call]]))
 
 (defn fetch-templates [on-success]
-    (println "fetching templates")
     (api-call GET "/templates"
        {:response-format :json
         :keywords? true ;; Ensure response keys are keywordized
@@ -11,10 +10,9 @@
         :error-handler #(js/console.error "Failed to fetch templates" %)}))
 
 (defn fetch-template [id on-success]
-    (println "fetching template")
     (api-call GET "/template"
-       {:params {:id id}
-        :response-format :json
-        :keywords? true ;; Ensure response keys are keywordized
-        :handler on-success ;; Callbacksa
-        :error-handler #(js/console.error "Failed to fetch template" %)}))
+              {:params {:id id}
+               :response-format :json
+               :keywords? true ;; Ensure response keys are keywordized
+               :handler on-success ;; Callbacksa
+               :error-handler #(js/console.error "Failed to fetch template" %)}))

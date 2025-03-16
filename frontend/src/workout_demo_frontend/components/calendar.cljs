@@ -1,9 +1,9 @@
 (ns workout-demo-frontend.components.calendar (:require [reagent.core :as r]
-[reagent.ratom :as ratom]
-[ajax.core :refer [GET]]
-[workout-demo-frontend.components.workout2 :refer [select-workout]]
-[clojure.string :as str]
-[workout-demo-frontend.auth :refer [api-call logged-in?]]))
+                                                        [reagent.ratom :as ratom]
+                                                        [ajax.core :refer [GET]]
+                                                        [workout-demo-frontend.components.workout :refer [select-workout]]
+                                                        [clojure.string :as str]
+                                                        [workout-demo-frontend.auth :refer [api-call logged-in?]]))
 
 (def months ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 (def days ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"])
@@ -96,7 +96,7 @@
         {:params {:month month :year year}
          :response-format :json
          :keywords? true ;; Ensure response keys are keywordized
-         :handler #(do (swap! month-summary assoc {:month month :year year} %) (println "% fsdafasd" %)) ;; Callbacks
+         :handler #(swap! month-summary assoc {:month month :year year} %) ;; Callbacks
          :error-handler #(js/console.error "Failed to fetch summary" %)}))
 
 (defonce fetch-trigger 
@@ -106,7 +106,6 @@
             (update-month-summary! month year)))))
 
 (defn invalidate-month! [y m]
-  (println "invalidate-month! " y m)
   (swap! month-summary dissoc {:month m :year y}))
 
 (defn calendar []

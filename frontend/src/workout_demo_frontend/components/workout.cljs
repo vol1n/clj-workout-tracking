@@ -1,188 +1,249 @@
 (ns workout-demo-frontend.components.workout
-    (:require [reagent.core :as r]
-              [clojure.string :as str]
-              [ajax.core :refer [GET POST]]
-              [reagent.ratom :as ratom]))
+  (:require [reagent.core :as r]
+            [reagent.ratom :as ratom]
+            [ajax.core :refer [GET POST]]
+            [workout-demo-frontend.components.list-button :refer [list-button]]
+            [workout-demo-frontend.util.templates :refer [fetch-templates fetch-template]]
+            [workout-demo-frontend.components.icons :refer [plus-sign x-sign]]
+            [workout-demo-frontend.auth :refer [api-call]]))
 
-(def workouts (r/atom nil))
-(def selected-workout (r/atom nil))
 
-(def exercises (r/atom nil))
-(def expanded (r/atom nil))
-(def workout-types [{:type :track :label "Track"} 
-                    {:type :lifting :label "Lifting"}
-                    {:type :other :label "Other"}])
+;; State
+(def app-state (r/atom {:templates nil ;; the templates to choose from
+                        :todays-workouts nil ;; [{:name "Upper Body", :symbol "🏋️"}]
+                        :selected-workout nil ;; id or nil
+                        :new-workout nil ;; set to true if add-workout is clicked, show select-template
+                        :date nil
+                        :invalidate-month! nil}))
 
-(defn format-sets [sets]
-    (str/join ", "
-        (for [set sets]
-            (str (:weight set) "x" (:reps set)))))
+(def form-state (r/atom {:template nil ;; id or nil
+                         :exercises [] ;; the actual form data - load from template on template selection 
+                         :expanded nil ;; index of expanded exercise
+                         :timestamp nil
+                         :id nil}))
 
-(defn plus-sign []
-  [:svg {:xmlns "http://www.w3.org/2000/svg"
-         :viewBox "0 0 24 24"
-         :fill "none"
-         :stroke "currentColor"
-         :stroke-width "2"
-         :class "w-6 h-6"}
-   [:line {:x1 "12" :y1 "5" :x2 "12" :y2 "19" :stroke-linecap "round"}]
-   [:line {:x1 "5" :y1 "12" :x2 "19" :y2 "12" :stroke-linecap "round"}]])
+(def last-save (r/atom nil))
+(defonce save-timeout (atom nil))
 
-(defn x-sign []
-  [:svg {:xmlns "http://www.w3.org/2000/svg"
-         :viewBox "0 0 24 24"
-         :fill "none"
-         :stroke "currentColor"
-         :stroke-width "2"
-         :class "w-6 h-6"}
-   [:line {:x1 "5" :y1 "5" :x2 "19" :y2 "19" :stroke-linecap "round"}]
-   [:line {:x1 "19" :y1 "5" :x2 "5" :y2 "19" :stroke-linecap "round"}]])
+;; Util
+(defn format-time [timestamp]
+  (let [date (js/Date. timestamp)
+        hours (.getHours date)
+        minutes (.getMinutes date)
+        padded-minutes (if (< minutes 10) (str "0" minutes) minutes)]
+    (str hours ":" padded-minutes)))
 
-(defn fetch-workouts [day month year]
-  (GET "/workouts"
-       {:params {:day day :month month :year year}
-        :response-format :json
-        :keywords? true ;; Ensure response keys are keywordized
-        :handler #(swap! workouts assoc {:day day :month month :year year} (:workouts %)) ;; Callbacksa
-        :error-handler #(js/console.error "Failed to fetch summary" %)}))
 
-(defn fetch-exercises []
-    (println "fetching exercises")
-    (GET "/exercises"
-       {:response-format :json
-        :keywords? true ;; Ensure response keys are keywordized
-        :handler #(reset! exercises (:exercises %)) 
-        :error-handler #(js/console.error "Failed to fetch summary" %)}))
+(defn seconds->time [seconds]
+  (if (nil? seconds)
+    nil
+  {:minutes (quot seconds 60)
+   :seconds (mod seconds 60)}))
 
-(defn convert-time [set]
-  (if (:time set)
-    (assoc set :time (+ (* (get-in set [:time :minutes]) 60) (get-in set [:time :seconds])))
-    set))
+(defn date-only [timestamp]
+  (let [date (js/Date. timestamp)]
+    (js/Date. (.getFullYear date) (.getMonth date) (.getDate date))))
 
-(defn add-workout [workout on-success]
-    (println "workout " workout)
-  (let [converted (update workout :exercises
-                          (fn [exercises]
-                            (map (fn [exercise]
-                                   (update exercise :sets (fn [sets] (map convert-time sets))))
-                                 exercises)))]
-    (if (= 0 (count (:exercises workout))) 
-        (js/alert "Please add at least one exercise") 
-    (POST "/workouts"
-       {:params {:workout workout}
-        :response-format :json
-        :keywords? true ;; Ensure response keys are keywordized
-        :handler on-success ;; Callbacksa
-        :error-handler #(js/console.error "Failed to add workout" %)}))))
+(defn is-today? [timestamp]
+  (let [today (date-only (js/Date.))
+        given-date (date-only timestamp)]
+    (= (.getTime today) (.getTime given-date))))
 
-(defonce expanded-change-trigger 
+;; API
+(defn fetch-workouts [day month year on-success]
+  (api-call GET "/workouts"
+            {:params {:day day :month month :year year}
+             :response-format :json
+             :keywords? true ;; Ensure response keys are keywordized
+             :handler on-success
+             :error-handler #(js/console.error "Failed to fetch summary" %)}))
+
+(defn update-templates! []
+  (swap! app-state (fn [prev] (assoc prev :templates :fetching)))
+  (let [on-success #(swap! app-state (fn [prev] (assoc prev :templates %)))]
+    (fetch-templates on-success)))
+
+(defn to-seconds [time]
+  (let [minutes (:minutes time)
+        seconds (:seconds time)]
+    (+ (* minutes 60) seconds)))
+
+(defn save-workout! []
+  (let [current-form-state @form-state
+        current-app-state @app-state
+        invalidate-month! (:invalidate-month! current-app-state)
+        parsed (assoc current-form-state :exercises (mapv
+                                                     #(if (nil? (:time (first (get % :sets))))
+                                                        %
+                                                        (assoc % :sets (mapv (fn [set] (assoc set :time (to-seconds (:time set)) :order (:order set))) (:sets %)))) (:exercises current-form-state)))]
+    (api-call POST "/workouts"
+              {:params parsed
+               :format :json
+               :response-format :json
+               :keywords? true
+               :handler #(do (swap! form-state (fn [prev] (let [initial (assoc prev :id (:id %) :template (get-in % [:template :id]) :exercises (:exercises %) :timestamp (:timestamp %) :expanded (:expanded prev))
+                                                              times-fixed (assoc initial :exercises (mapv (fn [exercise] (assoc exercise :sets (mapv (fn [set] (if (nil? (:time set)) set (assoc set :time (seconds->time (:time set)) :order (:order set)))) (:sets exercise)))) (:exercises %)))]
+                                                              times-fixed)))
+                                                              (reset! last-save (js/Date.))
+                                                              (when invalidate-month!
+                                                                (invalidate-month!)))
+               :error-handler #(js/console.error "Failed to add workout" %)})))
+
+(defn update-template! [id]
+  (let [on-success #(do
+                      (let [exercises (:exercises %) 
+                            build-new-exercise (fn [exercise] {:id nil
+                                                               :exercise {:name (:name exercise)
+                                                                          :id (:id exercise)
+                                                                          :tracking-type (:tracking-type exercise)}
+                                                               :sets (vec (for [i (range (:num-sets exercise))]
+                                                                       (case (keyword (:tracking-type exercise))
+                                                                         :workout.exercise/weightxreps {:weight 0 :reps 0 :order i}
+                                                                         :workout.exercise/time {:time {:minutes 0 :seconds 0} :order i})))})
+                            new-exercises (mapv build-new-exercise exercises)]
+                        (swap! form-state (fn [prev] (assoc prev :id nil :template id :exercises new-exercises :timestamp (:date @app-state))))
+                        (swap! app-state (fn [prev] (assoc prev :new-workout false)))))]
+    (fetch-template id on-success)))
+
+
+;; "hooks"
+(defonce select-workout-trigger
   (ratom/run! ;; Analagous to useEffect in React - except we don't need to specify deps - r/run returns nil whereas reaction returns something
-    (println "expanded " @expanded)))
+   (let [selected-workout-id (:selected-workout @app-state)
+         exercises (:exercises @form-state)
+         todays-workouts (if (= (:todays-workouts @app-state) :fetching) [] (:todays-workouts @app-state))
+         selected-workout (some #(when (= (:id %) selected-workout-id) %) todays-workouts)]
+     (when (and selected-workout-id (= (count exercises) 0))
+       (swap! form-state (fn [prev]
+                           (let [initial (assoc prev :id (:id selected-workout) :template (get-in selected-workout [:template :id]) :exercises (:exercises selected-workout) :timestamp (:timestamp selected-workout))
+                                 times-fixed (assoc initial :exercises (mapv (fn [exercise] (assoc exercise :sets (mapv (fn [set] (if (nil? (:time set)) set (assoc set :time (seconds->time (:time set)) :order (:order set)))) (:sets exercise)))) (:exercises initial)))]
+                             times-fixed)))))))
 
-(defn remove-at [v i]
-  (vec (concat (subvec v 0 i) (subvec v (inc i)))))
 
-(defn weight-reps-input [i j]
-[:div {:class "flex flex-col gap-y-2 mt-2"} ;; Styling for spacing
+(defn schedule-save! []
+  ;; Clear any existing timeout
+  (when @save-timeout (js/clearTimeout @save-timeout))
+  ;; Set a new timeout for 3 seconds
+  (reset! save-timeout
+          (js/setTimeout
+           (fn []
+             (reset! save-timeout nil) ;; Clear timeout after execution
+             (save-workout!)) ;; Save the workout
+           3000))) ;; 3s delay
 
-[:div {:class "flex items-center gap-x-2"}
-                                    [:label {:class "w-1/3"} "Weight:"]
-                                    [:input {:type "number"
-                                             :class "border p-2 rounded-md w-full"
-                                             :value (:weight set) ;; Controlled input value
-                                             :on-change #(swap! selected-workout assoc-in [:exercises i :sets j :weight] 
-                                                                (js/parseInt (.. % -target -value)))}]]
-                                   ;; Reps Input
-                                   [:div {:class "flex items-center gap-x-2"}
-                                    [:label {:class "w-1/3"} "Reps:"]
-                                    [:input {:type "number"
-                                             :class "border p-2 rounded-md w-full"
-                                             :value (:reps set) ;; Controlled input value
-                                             :on-change #(swap! selected-workout assoc-in [:exercises i :sets j :reps] 
-                                                                (js/parseInt (.. % -target -value)))}]]])
+(def last-saved-form-state (r/atom nil))
 
-(defn exercise-form []
-    [:div 
-                [:label {:class "w-1/3"} "Exercises:"]
-                (let [exercises-this-workout (:exercises @selected-workout)
-                      current-expanded @expanded
-                      current-selected (:type @selected-workout)
-                      exercise-options (current-selected @exercises)]
-                    (doall (for [[index exercise] (map-indexed vector exercises-this-workout)]
-                        ^{:key index}
-                        [:div {:class "border-gray-200 bg-white rounded-md"}
-                            [:div {:on-click #(swap! expanded (fn [current] (if (= index current) nil index)))}
-                                [:h2 {:class "text-lg font-bold"} (:name exercise)]]
-                            (when (= current-expanded index) 
-                                [:div {:class "flex flex-col gap-y-4 mt-2"}
-                                [:select {:class "border-gray-200 bg-white rounded-md"
-                                    :value (get-in selected-workout [:exercises index :ident])
-                                    :default (first exercise-options)
-                                    :on-change #(swap! selected-workout assoc-in [:exercises index] (first (filter (fn [option] (= (:ident option) (.. % -target -value))) exercise-options)))}
-                                    (for [[index option] (map-indexed vector exercise-options)]
-                                        ^{:key index}
-                                        [:option {:value (:ident option)} (:name option)])]
-                                (for [[j _] (map-indexed vector (:sets exercise))]
-                                  ^{:key j}
-                                  [:div {:class "flex items-center gap-x-2"}
-                                    [:label {:class "w-1/3"} "Set " (inc j) ": " (format-sets (:sets exercise))]
-                                  (let [exercise-name (get-in exercises-this-workout [index :name])
-                                        exercise-data (first (filter #(= exercise-name (:name %)) exercise-options))
-                                        tracking-type (:tracking-type exercise-data)]
-                                  (cond
-                                    (= j current-expanded) (cond 
-                                        (= "workout.exercise/weightxreps" tracking-type) (weight-reps-input index j)
-                                        )))
-                                  [:button {:class "flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full bg-red-500 text-white"
-                                          :on-click #(swap! selected-workout update-in [:exercises index :sets] (fn [sets] (remove-at sets j)))}
-                                      [x-sign]]])
-                                [:button {:class "flex items-center gap-2 p-2 hover:bg-gray-100 border-gray-200 rounded-full w-1/4"
-                                          :on-click #(swap! selected-workout update-in [:exercises index :sets] conj {:weight 0 :reps 0})}
-                                    [plus-sign]
-                                    "Add Set"]])]))
-                [:button {:class "flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full bg-blue-500 text-white"
-                            :on-click #(swap! selected-workout update :exercises conj {:exercise (first exercise-options) :sets []})}
-                    [plus-sign]
-                    "Add Exercise"])]
-    )
+(defonce auto-save-workout-trigger
+  (ratom/run!
+   (when (and (not= 0 (count (:exercises @form-state)))  ;; Only if there are exercises
+              (not= @form-state @last-saved-form-state)) ;; Only if form-state changed
+     (reset! last-saved-form-state @form-state) ;; Only trigger if form has data
+     (schedule-save!))))
 
-(defn workout-form [close-fn]
-    (if (nil? @selected-workout)
-        [:p "Loading..."]
-    [:div {:class "flex flex-col gap-y-4"}
-            [:div 
-                [:label {:class "w-1/3"} "Workout Type:"]
-                [:select {:class "border-gray-200 bg-white rounded-md"
-                    :on-change #(swap! selected-workout assoc :type (keyword (.. % -target -value)))}
-                    (for [[index workout-type] (map-indexed vector workout-types)]  
-                        ^{:key (str index (:type workout-type))}
-                        [:option {:value (:type workout-type)} (:label workout-type)])]]
-            [exercise-form]
-            [:button {:class "absolute bottom-0 p-2 hover:bg-green-300 text-white rounded-full" :on-click #(add-workout @selected-workout close-fn)} "Submit"]]))
+;; State management
+(defn update-workouts! [day month year] ;; 
+  (swap! app-state (fn [prev] (assoc prev :todays-workouts :fetching)))
+  (let [keywordize-tracking-type (fn [exercise]
+                                   (let [after (update-in exercise [:exercise :tracking-type] keyword)]
+                                     after))
+        on-success #(swap! app-state (fn [prev] (assoc prev :todays-workouts (mapv (fn [workout] (assoc workout :exercises (mapv keywordize-tracking-type (:exercises workout)))) %))))]
+    (fetch-workouts day month year on-success)))
 
-(defn select-workout-from-day [day month year close-fn]
-    (when (nil? @workouts)
-        (println "fetching workouts")
-        (fetch-workouts day month year))
-    (when (nil? @exercises)
-        (println "fetching exercises")
-        (fetch-exercises))
+;; Components
+;; Flow: select workout -> select template if adding workout -> workout form 
+(defn time-entry [minutes seconds on-minute-change on-second-change]
+  [:div {:class "flex items-center gap-x-2"}
+   [:label {:class "w-1/3"} "Time:"]
+   [:input {:type "number"
+            :class "border p-2 rounded-md w-full"
+            :value minutes ;; Controlled input value
+            :on-change #(on-minute-change (js/parseInt (.. % -target -value)))}]
+   [:span {:class "w-1/8"} ":"]
+   [:input {:type "number"
+            :class "border p-2 rounded-md w-full"
+            :value seconds ;; Controlled input value
+            :on-change #(on-second-change (js/parseInt (.. % -target -value)))}]])
+
+(defn set-entry [weight-value reps-value on-weight-change on-reps-change]
+  [:div {:class "flex items-center gap-x-2"}
+   [:label {:class "w-1/3"} "Weight:"]
+   [:input {:type "number"
+            :class "border p-2 rounded-md w-full"
+            :value weight-value ;; Controlled input value
+            :on-change #(on-weight-change (js/parseInt (.. % -target -value)))}]
+   [:label {:class "w-1/3"} "Reps:"]
+   [:input {:type "number"
+            :class "border p-2 rounded-md w-full"
+            :value reps-value ;; Controlled input value
+            :on-change #(on-reps-change (js/parseInt (.. % -target -value)))}]])
+
+(defn workout-form []
+  (let [workout-id (:selected-workout @app-state)
+        workout-name (some #(when (= (:id %) workout-id) (:name (:template %))) (:todays-workouts @app-state))
+        exercises (:exercises @form-state)]
+    [:div
+     [:h1 {:class "text-2xl font-bold"} workout-name]
+     [:label {:class "w-1/3"} "Exercises:"]
+     (let [current-expanded (:expanded @form-state)]
+       (doall (for [[index exercise] (map-indexed vector exercises)]
+                (let [exercise-template (:exercise exercise)
+                      sets (:sets exercise)]
+                  ^{:key index}
+                  [:div {:class "border-gray-200 bg-white rounded-md"}
+                   [:div {:on-click #(swap! form-state (fn [current-form-state]
+                                                         (if (= index current-expanded)
+                                                           (assoc current-form-state :expanded nil)
+                                                           (assoc current-form-state :expanded index))))}
+                    [:h2 {:class "text-lg font-bold"} (:name exercise-template)]]
+                   (when (= current-expanded index)
+                     [:div {:class "flex flex-col gap-y-4 mt-2"}
+                      (doall (for [[j set] (map-indexed vector sets)]
+                               ^{:key j}
+                               [:div {:class "flex items-center gap-x-2"}
+                                (case (keyword (:tracking-type exercise-template))
+                                  :workout.exercise/weightxreps (let [on-weight-change #(swap! form-state assoc-in [:exercises index :sets j :weight] %)
+                                                                      on-reps-change #(swap! form-state assoc-in [:exercises index :sets j :reps] %)]
+                                                                  [set-entry (:weight set) (:reps set) on-weight-change on-reps-change])
+                                  :workout.exercise/time (let [on-minute-change #(swap! form-state assoc-in [:exercises index :sets j :time :minutes] %)
+                                                               on-second-change #(swap! form-state assoc-in [:exercises index :sets j :time :seconds] %)]
+                                                           [time-entry (get-in set [:time :minutes]) (get-in set [:time :seconds]) on-minute-change on-second-change]))]))])]))))]))
+
+(defn select-template []
+  (cond
+    (or (nil? (:templates @app-state)) (= (:templates @app-state) :fetching )) [:p "Loading..."]
+    :else [:div {:class "grid grid-cols-1 items-center gap-y-4 mt-6"}
+           (for [[index template] (map-indexed vector (:templates @app-state))]
+             ^{:key index}
+             [list-button {:text (:name template) :icon #(fn [] [:span {:class "text-2xl"} (:symbol template)]) :variant :secondary :on-click #(update-template! (:id template))}])]))
+
+(defn select-workout [day month year close-fn invalidate-month!]
+  (swap! app-state assoc :invalidate-month! invalidate-month!)
+  (when (nil? (:todays-workouts @app-state))
+    (update-workouts! day month year))
+  (when (nil? (:templates @app-state))
+    (update-templates!))
+  (if (is-today? (:date @app-state))
+    (swap! app-state assoc :date (js/Date.))
+    (swap! app-state assoc :date (js/Date. year month day)))
+  (let [current-app-state @app-state
+        current-form-state @form-state
+        wrapped-close-fn #(do
+                            (reset! app-state {:todays-workouts nil :selected-workout nil :new-workout nil})
+                            (reset! form-state {:template nil :exercises [] :expanded nil})
+                            (close-fn))]
+
     [:div {:class "relative p-4 bg-gray-50 min-h-screen"} ;; Wrapper container
         ;; X Button pinned to the top-right
-        [:button {:class "absolute top-2 right-2 p-2 text-gray-500 hover:text-red-500"
-                 :on-click close-fn}
-            [x-sign]]
-            (cond 
-                (nil? @workouts) [:p "Loading..."]
-                :else (cond 
-                    (nil? @selected-workout) [:div {:class "grid grid-cols-1 items-center gap-y-4 mt-6"}
-                        (for [[index workout] (map-indexed vector (get @workouts {:day day :month month :year year}))]
-                            ^{:key index}
-                            [:div {:class "flex items-center gap-x-4"
-                                :on-click #(reset! selected-workout workout)}
-                                [:h2 {:class "text-lg font-bold"} (:type workout)]])
-                        [:button {:class "flex items-center gap-2 p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition"
-                                  :on-click #(reset! selected-workout {:id nil :exercises [] :type :lifting})}
-                            [plus-sign]
-                            "Add Workout"]]
-                    :else [workout-form @selected-workout close-fn]))])
+     [:button {:class "absolute top-2 right-2 p-2 text-gray-500 hover:text-red-500"
+               :on-click wrapped-close-fn}
+      [x-sign]]
+     (cond
+       (:new-workout current-app-state) [select-template]
+       (or (nil? (:todays-workouts current-app-state)) (= (:todays-workouts current-app-state) :fetching)) [:p "Loading..."]
+       :else (cond
+               (= (count (:exercises current-form-state)) 0) [:div {:class "grid grid-cols-1 items-center gap-y-4 mt-6"}
+                                                              (for [[index workout] (map-indexed vector (:todays-workouts current-app-state))]
+                                                                ^{:key index}
+                                                                [list-button {:subtext (format-time (:timestamp workout)) :icon #(fn [] [:span {:class "text-2xl"} (get-in workout [:template :symbol])]) :variant :secondary :text (get-in workout [:template :name]) :on-click #(swap! app-state assoc :selected-workout (:id workout)) :extra-classes "w-1/2"}])
+                                                              [list-button {:text "Add Workout" :icon plus-sign :variant :primary :on-click #(swap! app-state assoc :new-workout true) :extra-classes "w-1/3"}]]
+               :else [workout-form (:selected-workout @app-state)]))]))
