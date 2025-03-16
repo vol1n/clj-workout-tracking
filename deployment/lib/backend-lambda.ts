@@ -37,7 +37,7 @@ export class BackendLambdaStack extends cdk.Stack {
         'LambdaExecutionPolicy': new iam.PolicyDocument({
           statements: [
             new iam.PolicyStatement({
-              actions: ['ssm:GetParameter', 'kms:Decrypt'],
+              actions: ['ssm:GetParameter', 'kms:Decrypt', 'dynamodb:*'],
               resources: ['*'],
             }),
           ],
