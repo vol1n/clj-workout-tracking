@@ -15,19 +15,16 @@
 (defn create-template [template username]
     (println "templ4te " template)
     (let [parsed-template (assoc template :exercises (mapv #(assoc % :tracking-type (keyword (:tracking-type %))) (:exercises template)))]
-    (println "templ4te " parsed-template)
-    (println (s/explain-data ::template parsed-template))
-    (assert (s/valid? ::template parsed-template))
-    (upsert-template parsed-template username)))
+      (println "templ4te " parsed-template)
+      (println (s/explain-data ::template parsed-template))
+      (assert (s/valid? ::template parsed-template))
+      (println "templ4te result" (upsert-template parsed-template username))))
 
 (defn fetch-template [id username]
-  (println "im in fetch template")
     (let [template (get-template-full id username)]
-        (println "templ4te " template)
         template))
 
 (defn fetch-templates [username]
-    (println "FETCH for " username)
     (->>
         (get-templates username)
         (mapv (fn [[id name symbol]] {:id id :name name :symbol symbol}))))
